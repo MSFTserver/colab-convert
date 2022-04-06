@@ -1,0 +1,3 @@
+[console_scripts]
+colab-convert = colab_convert.__main__:main
+

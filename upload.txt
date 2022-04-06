@@ -1,0 +1,25 @@
+Install to conda environment:
+
+* twine
+
+    conda install twine
+
+* On Windows install Git together with Bash.
+
+
+Scripts:
+
+To run the script open Bash terminal, then type <code>. </code> (dot with space), then
+drag and drop the script to the Bash terminal (the script will change CWD itself).
+
+* open terminal with activated environment
+  * to upload package to pypi change version in `upload`, push changes, run `upload`
+
+
+Hint: Easily create shortcut to activated environment via Shortcutter:
+
+    conda install -c defaults -c conda-forge shortcutter
+    # pip install shortcutter
+    shortcutter --terminal
+
+* To start Bash on windows type `%b%` in the terminal created via Shortcutter
