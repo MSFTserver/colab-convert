@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: colab-convert
-Version: 1.0.0
+Version: 1.0.1
 Summary: Convert .py files runnable in VSCode/Python or Atom/Hydrogen to jupyter/colab .ipynb notebooks and vice versa
 Home-page: https://github.com/MSFTserver/colab-convert
 Author: HostsServer
