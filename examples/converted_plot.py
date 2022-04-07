@@ -16,10 +16,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 if True:
-        !git clone https://github.com/MSFTserver/pytorch3d-lite.git
-        %cd pytorch3d-lite
+        sub_p_res = subprocess.run(['git', 'clone', 'https://github.com/MSFTserver/pytorch3d-lite.git'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+        print(sub_p_res)
+        os.chdir('pytorch3d-lite')
 
-%cd ..
+os.chdir('..')
 shutil.rmtree(f'{os.getcwd()}/pytorch3d-lite')
 
 x = np.linspace(0, 20, 100)
