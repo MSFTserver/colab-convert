@@ -3,3 +3,4 @@ dist/
 colab_convert.egg-info/
 *.pyc
 conda-forge/
+MANIFEST.in
