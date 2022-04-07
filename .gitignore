@@ -1,4 +1,5 @@
 build/
 dist/
-ipynb_py_convert.egg-info/
+colab_convert.egg-info/
 *.pyc
+conda-forge/
