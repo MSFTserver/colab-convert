@@ -14,6 +14,7 @@
 # !! }}
 import matplotlib.pyplot as plt
 import numpy as np
+import shutil
 
 if True:
         !git clone https://github.com/MSFTserver/pytorch3d-lite.git
@@ -21,6 +22,8 @@ if True:
 
 %cd ..
 shutil.rmtree(f'{os.getcwd()}/pytorch3d-lite')
+
+%env
 
 x = np.linspace(0, 20, 100)
 plt.plot(x, np.sin(x))

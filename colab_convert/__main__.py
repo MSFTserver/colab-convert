@@ -7,8 +7,16 @@ header_comment = '# %%\n'
 def nb2py(notebook, args):
     result = []
     cells = notebook['cells']
+
     main_metadata = json.dumps(notebook['metadata'],indent=2).split("\n")
     reformat_main_metadata = '# !! {"main_metadata":'
+
+    new_imports_meta = "# !! {'metadata':{\n# !!   'id':'colab-convert'\n# !! }"+"}\n"
+    new_imports_cell = f"{header_comment}{new_imports_meta}\n#<cc-imports>\n"
+    new_import = False
+    os_added = False
+    sp_added = False
+
     for key in main_metadata:
         if key == '{':
             reformat_main_metadata+=f"{key}\n"
@@ -34,8 +42,10 @@ def nb2py(notebook, args):
                           (header_comment+reformat_metadata, ''.join(cell['source'])))
 
         if cell_type == 'code':
+
             source = cell['source']
             x = 0
+
             if args['c_m']:
                 for line in source:
                     spaces_in_line = len(line) - len(line.lstrip(' '))
@@ -48,30 +58,59 @@ def nb2py(notebook, args):
                         new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                         new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n{spaces}print(sub_p_res)\n"
                         source[x] = new_cmd_spaces
-                        if not args['s_o']:
+                        if not sp_added:
+                            new_import = True
+                            sp_added = True
+                            new_imports_cell+=f"import subprocess\n"
+                        if not args['n_o']:
                             print(f'  converted:\n    {strip_line}  to:\n  {new_cmd}')
                     elif strip_line.startswith('%'):
                         cmd = strip_line[:-1].replace("%","",1).split(" ")
                         is_cmd = 0
-                        if cmd[0] == "cd":
+
+                        # check if command is in the list of commands
+                        if cmd[0] in ["cd","env"]:
                             is_cmd = 1
-                            if not args['s_o']:
+                            new_import = True
+                            if not args['n_o']:
                                 print(f'%{cmd[0]} command detected')
+                        
+                        # if is command, add the new command to the source  
                         if is_cmd:
                             if cmd[0] == "cd":
                                 new_cmd = f"os.chdir('{cmd[1]}')\n"
                                 new_cmd_spaces = f"{spaces}os.chdir('{cmd[1]}')\n"
-                            source[x] = new_cmd_spaces
-                            if not args['s_o']:
-                                print(f'  converted:\n   {strip_line}  to:\n    {new_cmd}')
+                                if not os_added:
+                                    os_added = True
+                                    new_imports_cell+="import os\n"
+
+                            if cmd[0] == "env":
+                                new_cmd = f"for k, v in os.environ.items():\n"+"        print(f'{k}={v}')\n"
+                                new_cmd_spaces = f"{spaces}for k, v in os.environ.items():\n{spaces}"+"    print(f'{k}={v}')\n"
+                                if not os_added:
+                                    os_added = True
+                                    new_imports_cell+="import os\n"
+
+                            if not args['n_o']:
+                                print(f'  converted:\n    {strip_line}  to:\n    {new_cmd}')
                         else:
-                            if not args['s_o']:
-                                print(f'{cmd[0]} magic command is not supported yet!!!')
+                            if args['n_c']:
+                                if not args['n_o']:
+                                    print(f'{cmd[0]} magic command is not supported!!!')
+                                    print(f'  commenting out unsupported command:\n    #<cc-ac> {strip_line}')
+                                new_cmd = f'#<cc-ac> {strip_line}'
+                                new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
+                        
+                        source[x] = new_cmd_spaces
                     x+=1
             result.append("%s%s" % (header_comment+reformat_metadata, ''.join(source)))
+    if new_import:
+        format_cell = f'\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
+        update_cell = f'{new_imports_cell}\n{format_cell}'
+    else:
+        update_cell = '\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
 
-    return '\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
-
+    return update_cell
 
 def py2nb(py_str, args):
     # remove leading header comment
@@ -80,6 +119,12 @@ def py2nb(py_str, args):
 
     cells = []
     chunks = py_str.split('\n\n%s' % header_comment)
+
+    new_imports_meta = {'id':'colab-convert'}
+    new_imports_cell = f"#<cc-imports>\n"
+    new_import = False
+    os_added = False
+    sp_added = False
 
     for chunk in chunks:
         new_json = {'metadata':{}}
@@ -113,31 +158,55 @@ def py2nb(py_str, args):
                         for i in range(spaces_in_line):
                             spaces+=" "
                         strip_line = line.lstrip(' ')
+
                         if strip_line.startswith('!'):
                             cmd = strip_line[:-1].replace("!","",1).split(" ")
                             print(f'!{cmd[0]} command detected')
                             new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                             new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n{spaces}print(sub_p_res)\n"
                             chunk[x] = new_cmd_spaces
-                            if not args['s_o']:
+                            if not sp_added:
+                                new_import = True
+                                sp_added = True
+                                new_imports_cell+=f"import subprocess\n"
+                            if not args['n_o']:
                                 print(f'  converted:\n    {strip_line}  to:\n{new_cmd}')
+
                         elif strip_line.startswith('%'):
                             cmd = strip_line[:-1].replace("%","",1).split(" ")
                             is_cmd = 0
-                            if cmd[0] == "cd":
+
+                            # check if command is in the list of commands
+                            if cmd[0] in ["cd","env"]:
                                 is_cmd = 1
-                                if not args['s_o']:
-                                    print(f'%{cmd[0]} command detected')
+                            if not args['n_o']:
+                                print(f'%{cmd[0]} command detected')
+
                             if is_cmd:
                                 if cmd[0] == "cd":
                                     new_cmd = f"os.chdir('{cmd[1]}')\n"
                                     new_cmd_spaces = f"{spaces}os.chdir('{cmd[1]}')\n"
-                                chunk[x] = new_cmd_spaces
-                                if not args['s_o']:
-                                    print(f'  converted:\n   {strip_line}  to:\n    {new_cmd}')
+                                    if not os_added:
+                                        os_added = True
+                                        new_imports_cell+="import os\n"
+                                if cmd[0] == "env":
+                                    new_cmd = f"for k, v in os.environ.items():\n"+"    print(f'{k}={v}')\n"
+                                    new_cmd_spaces = f"{spaces}for k, v in os.environ.items():\n"+"{spaces}    print(f'{k}={v}')\n"
+                                    if not os_added:
+                                        os_added = True
+                                        new_imports_cell+="import os\n"
+
+                                if not args['n_o']:
+                                    print(f'  converted:\n    {strip_line}  to:\n    {new_cmd}')
                             else:
-                                if not args['s_o']:
-                                    print(f'{cmd[0]} magic command is not supported yet!!!')
+                                if args['n_c']:
+                                    if not args['n_o']:
+                                        print(f'%{cmd[0]} unsupported command is detected')
+                                        print(f'  commenting out unsupported command:\n    #<cc-ac> {strip_line}')
+                                    chunk[x] = f'#<cc-ac> {strip_line}'
+                                    new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
+
+                            chunk[x] = new_cmd_spaces
                         x+=1
                 cell['source'] = chunk
             cells.append(cell)
@@ -148,6 +217,13 @@ def py2nb(py_str, args):
           'nbformat': 4,
           'nbformat_minor': 4
     }
+
+    if new_import:
+        notebook['cells'].insert(0, {
+                'cell_type': 'code',
+                'metadata': new_imports_meta,
+                'source': [e+'\n' for e in new_imports_cell.split('\n') if e]
+            })
 
     return notebook
 
@@ -205,21 +281,27 @@ def main():
         print(f'setting output file to {argv[1]}')
     #default args
     if in_is_ipynb:
-        supress_outputs = False
+        no_outputs = False
         convert_magic = True
+        no_comment = False
     if in_is_py:
-        supress_outputs = False
+        no_outputs = False
         convert_magic = False
+        no_comment = True
     if out_file_ext != '.ipynb' and out_file_ext != '.py':
         print('Output file must be .ipynb or .py')
         sys.exit(1)
     if extra_args:
         if '--no-outputs' in extra_args or '-q' in extra_args:
-            supress_outputs = True
+            no_outputs = True
+            print("suppressing outputs")
+        if '--no-comment' in extra_args or '-n' in extra_args:
+            no_comment = True
+            print('no auto commenting for ipthon magic commands')
         if '--convert-magic' in extra_args or '-c' in extra_args:
             convert_magic = True
             print('converting magic commands')
-        elif '--retain-magic' in extra_args or '-r' in extra_args:
+        if '--retain-magic' in extra_args or '-r' in extra_args:
             convert_magic = False
             if '--convert-magic' in extra_args or '-c' in extra_args:
                 print('--retain-magic takes presidence over --convert-magic')
@@ -237,7 +319,7 @@ def main():
         if in_is_py:
             print('NOT converting magic commands!')
     
-    args = {'s_o': supress_outputs, 'c_m': convert_magic}
+    args = {'n_o': no_outputs, 'c_m': convert_magic, 'n_c': no_comment}
 
     convert(in_file=argv[0], out_file=argv[1], extra_args=args)
 

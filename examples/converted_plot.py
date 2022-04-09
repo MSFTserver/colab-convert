@@ -1,4 +1,13 @@
 # %%
+# !! {'metadata':{
+# !!   'id':'colab-convert'
+# !! }}
+
+#<cc-imports>
+import subprocess
+import os
+
+# %%
 # !! {"metadata":{
 # !!   "id": "TitleTop"
 # !! }}
@@ -14,6 +23,7 @@
 # !! }}
 import matplotlib.pyplot as plt
 import numpy as np
+import shutil
 
 if True:
         sub_p_res = subprocess.run(['git', 'clone', 'https://github.com/MSFTserver/pytorch3d-lite.git'], stdout=subprocess.PIPE).stdout.decode('utf-8')
@@ -22,6 +32,9 @@ if True:
 
 os.chdir('..')
 shutil.rmtree(f'{os.getcwd()}/pytorch3d-lite')
+
+for k, v in os.environ.items():
+    print(f'{k}={v}')
 
 x = np.linspace(0, 20, 100)
 plt.plot(x, np.sin(x))
