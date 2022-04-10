@@ -57,7 +57,7 @@ def nb2py(notebook, args):
                     # if magic command includes a '!' bang use subprocess to call the command
                     if strip_line.startswith('!'):
                         cmd = strip_line[:-1].replace("!","",1).split(" ")
-                        new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8') #<cc-cm>\n    print(sub_p_res) #<cc-cm>\n"
+                        new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8') #<cc-cm>\n    print(sub_p_res)\n"
                         new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8') #<cc-cm>\n{spaces}print(sub_p_res) #<cc-cm>\n"
                         source[x] = new_cmd_spaces
                         if not sp_added:
@@ -82,7 +82,7 @@ def nb2py(notebook, args):
                         # if is command, add the new command to the source  
                         if is_cmd:
                             if cmd[0] == "cd":
-                                new_cmd = f"os.chdir('{cmd[1]}') #<cc-cm>\n"
+                                new_cmd = f"os.chdir('{cmd[1]}')\n"
                                 new_cmd_spaces = f"{spaces}os.chdir('{cmd[1]}') #<cc-cm>\n"
                                 if not os_added:
                                     os_added = True
@@ -92,25 +92,25 @@ def nb2py(notebook, args):
                                 if len(cmd) > 1 or cmd[0] == "set_env":
                                     if len(cmd) == 2:
                                         if '=' in cmd[1]:
-                                            new_cmd = f"os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}' #<cc-cm>\n"
+                                            new_cmd = f"os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}'\n"
                                             new_cmd_spaces = f"{spaces}os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}' #<cc-cm>\n"
                                             if not os_added:
                                                 os_added = True
                                                 new_imports_cell+="import os\n"
                                         else:
-                                            new_cmd = f"os.environ['{cmd[1]}'] #<cc-cm>\n"
+                                            new_cmd = f"os.environ['{cmd[1]}']\n"
                                             new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] #<cc-cm>\n"
                                             if not os_added:
                                                 os_added = True
                                                 new_imports_cell+="import os\n"
                                     else:
-                                        new_cmd = f"os.environ['{cmd[1]}'] = '{cmd[2]}' #<cc-cm>\n"
+                                        new_cmd = f"os.environ['{cmd[1]}'] = '{cmd[2]}'\n"
                                         new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] = '{cmd[2]}' #<cc-cm>\n"
                                         if not os_added:
                                             os_added = True
                                             new_imports_cell+="import os\n"
                                 else:
-                                    new_cmd = f"for k, v in os.environ.items():\n #<cc-cm>"+"        print(f'{k}={v}') #<cc-cm>\n"
+                                    new_cmd = f"for k, v in os.environ.items():\n"+"        print(f'{k}={v}')\n"
                                     new_cmd_spaces = f"{spaces}for k, v in os.environ.items(): #<cc-cm>\n{spaces}"+"    print(f'{k}={v}') #<cc-cm>\n"
                                     if not os_added:
                                         os_added = True
@@ -122,7 +122,7 @@ def nb2py(notebook, args):
                             if not args['n_c']:
                                 if not args['n_o']:
                                     print(f'unsupported command is detected!')
-                                    print(f'  commenting out unsupported command:\n    #<cc-ac> {strip_line}')
+                                    print(f'  commenting out unsupported command:\n    {strip_line}')
                                 new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
                             else:
                                 if not args['n_o']:
@@ -191,7 +191,7 @@ def py2nb(py_str, args):
                         # if magic command includes a '!' [bang] use subprocess to call the command
                         if strip_line.startswith('!'):
                             cmd = strip_line[:-1].replace("!","",1).split(" ")
-                            new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8') #<cc-cm>\n    print(sub_p_res) #<cc-cm>\n"
+                            new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                             new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8') #<cc-cm>\n{spaces}print(sub_p_res) #<cc-cm>\n"
                             chunk[x] = new_cmd_spaces
                             if not sp_added:
@@ -214,7 +214,7 @@ def py2nb(py_str, args):
 
                             if is_cmd:
                                 if cmd[0] == "cd":
-                                    new_cmd = f"os.chdir('{cmd[1]}') #<cc-cm>\n"
+                                    new_cmd = f"os.chdir('{cmd[1]}')\n"
                                     new_cmd_spaces = f"{spaces}os.chdir('{cmd[1]}') #<cc-cm>\n"
                                     if not os_added:
                                         os_added = True
@@ -224,25 +224,25 @@ def py2nb(py_str, args):
                                     if len(cmd) > 1 or cmd[0] == "set_env":
                                         if len(cmd) == 2:
                                             if '=' in cmd[1]:
-                                                new_cmd = f"os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}' #<cc-cm>\n"
+                                                new_cmd = f"os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}'\n"
                                                 new_cmd_spaces = f"{spaces}os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}' #<cc-cm>\n"
                                                 if not os_added:
                                                     os_added = True
                                                     new_imports_cell+="import os\n"
                                             else:
-                                                new_cmd = f"os.environ['{cmd[1]}'] #<cc-cm>\n"
+                                                new_cmd = f"os.environ['{cmd[1]}']\n"
                                                 new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] #<cc-cm>\n"
                                                 if not os_added:
                                                     os_added = True
                                                     new_imports_cell+="import os\n"
                                         else:
-                                            new_cmd = f"os.environ['{cmd[1]}'] = '{cmd[2]}' #<cc-cm>\n"
+                                            new_cmd = f"os.environ['{cmd[1]}'] = '{cmd[2]}'\n"
                                             new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] = '{cmd[2]}' #<cc-cm>\n"
                                             if not os_added:
                                                 os_added = True
                                                 new_imports_cell+="import os\n"
                                     else:
-                                        new_cmd = f"for k, v in os.environ.items(): #<cc-cm>\n"+"        print(f'{k}={v}') #<cc-cm>\n"
+                                        new_cmd = f"for k, v in os.environ.items():\n"+"        print(f'{k}={v}')\n"
                                         new_cmd_spaces = f"{spaces}for k, v in os.environ.items(): #<cc-cm>\n{spaces}"+"    print(f'{k}={v}') #<cc-cm>\n"
                                         if not os_added:
                                             os_added = True
@@ -251,10 +251,10 @@ def py2nb(py_str, args):
                                 if not args['n_o']:
                                     print(f'  converted:\n    {strip_line}  to:\n    {new_cmd}')
                             else:
-                                if args['n_c']:
+                                if not args['n_c']:
                                     if not args['n_o']:
                                         print(f'unsupported command is detected!')
-                                        print(f'  commenting out unsupported command:\n    #<cc-ac> {strip_line}')
+                                        print(f'  commenting out unsupported command:\n    {strip_line}')
                                     new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
                                 else:
                                     if not args['n_o']:
@@ -310,6 +310,7 @@ def main():
     argv = sys.argv[1:]
 
     if len(argv) == 0:
+        print("please specify atleast one file to convert")
         print('Usage: colab-convert <input_file> <output_file> <extra_args>')
         sys.exit(1)
     if len(argv) == 1:
@@ -322,12 +323,13 @@ def main():
     in_is_ipynb = False
     args_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm', '--outputs', '-o', '--log', '-l']
     args_desc = {
+        'Colab-Convert': '\nall flags are optional and have set defaults for best results but have included several flags to enable or disable certain functions on by default\n',
         '--help': '(-h)\n  Show this help message',
-        '--retain-magic': ' (-rm)\n  Retain magic commands in the output\n    default [ON] for .py input files\n    default [OFF] for .ipynb input files\n',
-        '--convert-magic': ' (-cm)\n  Convert unsupported magic commands to python code\n    default [OFF] for .py input files\n    default [ON] for .ipynb input files\n',
-        '--auto-comment': ' (-ac)\n  Automatically convert unsupported magic commands to comments\n    default [OFF] for .py input files\n    default [ON] for .ipynb input files\n',
-        '--no-comment': ' (-nc)\n  Do not convert unsupported magic commands to comments\n    default [ON] for .py input files\n    default [OFF] for .ipynb input files\n',
-        '--outputs': ' (-o)\n  Outputs logs of conversions and commented lines.\n    default [OFF]\n',
+        '--retain-magic': ' (-rm)\n  Keep magic commands in the output\n      default [ON] for .py input files\n    default [OFF] for .ipynb input files\n',
+        '--convert-magic': ' (-cm)\n  Convert magic commands to python code\n    default [OFF] for .py input files\n    default [ON] for .ipynb input files\n',
+        '--auto-comment': ' (-ac)\n  Convert unsupported magic commands to comments\n    default [OFF] for .py input files\n    default [ON] for .ipynb input files\n',
+        '--no-comment': ' (-nc)\n  Keep unsupported magic commands\n    default [ON] for .py input files\n    default [OFF] for .ipynb input files\n',
+        '--outputs': ' (-o)\n  Outputs console logs of conversions and commented lines.\n    default [OFF]\n',
         '--log': ' (-l)\n  Same as Outputs\n   default [OFF]',
     }
     extra_args = None if not argv[2:] else argv[2:]
@@ -371,44 +373,57 @@ def main():
             for key, value in args_desc.items():
                 print(key, value)
             sys.exit(1)
+
         if '--outputs' in extra_args or '--log' in extra_args or '-l' in extra_args or '-o' in extra_args:
             no_outputs = False
-            print('showing outputs from converter')
+            print('[OK] showing outputs from converter')
         else:
             print('[NOT] showing outputs from converter')
-
-        if '--no-comment' in extra_args or '-nc' in extra_args or '--auto-comment' in extra_args or '-ac' in extra_args:
-            if '--auto-comment' in extra_args or '-ac' in extra_args:
-                if '--no-comment' in extra_args or '-nc' in extra_args:
-                    print('--auto-comment (-ac) takes presidence over --no-comment (-nc)\n'+'using (-ac)')
-                print('[NOT] commenting out unsupported magic commands')
-                no_comment = False
-            else:
-                no_comment = True
-                print('[NOT] commenting out unsupported magic commands')
-        else:
-            print('commenting out unsupported magic commands')
 
         if '--convert-magic' in extra_args or '-cm' in extra_args or '--retain-magic' in extra_args or '-rm' in extra_args:
             if '--retain-magic' in extra_args or '-rm' in extra_args:
                 if '--convert-magic' in extra_args or '-cm' in extra_args:
-                    print('--retain-magic (-rm) takes presidence over --convert-magic (-cm)\n'+'using (-rm)')
+                    print('\n    --retain-magic (-rm) takes presidence over --convert-magic (-cm)\n'+'    using --retain-magic (-rm)\n')
                 print('[NOT] converting magic commands!')
                 convert_magic = False
             else:
-                print('converting magic commands')
+                print('[OK] converting magic commands')
                 convert_magic = True
         else:
-            if in_is_ipynb:
-                print('converting magic commands')
-            if in_is_py:
+            if convert_magic:
+                print('[OK] converting magic commands')
+            else:
                 print('[NOT] converting magic commands!')
+
+        if '--no-comment' in extra_args or '-nc' in extra_args or '--auto-comment' in extra_args or '-ac' in extra_args:
+            if not '--convert-magic' in extra_args and not '-cm' in extra_args and '--retain-magic' in extra_args and not '-rm' in extra_args:
+                print('\n    --convert-magic (-cm) is required when --no-comment (-nc) or --auto-comment (-ac) are used')
+                print('    auto set to flag --convert-magic (-cm)\n')
+                convert_magic = True
+            if '--auto-comment' in extra_args or '-ac' in extra_args:
+                if '--no-comment' in extra_args or '-nc' in extra_args and not '--retain-magic' in extra_args and not '-rm' in extra_args:
+                    print('\n    --auto-comment (-ac) takes presidence over --no-comment (-nc)\n'+'    using --auto-comment (-ac)\n')
+                if '--retain-magic' in extra_args or '-rm' in extra_args:
+                    print('\n    --retain-magic (-rm) takes presidence over --auto-comment (-ac)\n'+'    using --no-comment (-nc)\n')
+                    print('[NOT] commenting out unsupported magic commands')
+                    no_comment = True
+                else:
+                    print('[OK] commenting out unsupported magic commands')
+                    no_comment = False
+            else:
+                no_comment = True
+                print('[NOT] commenting out unsupported magic commands')
+        else:
+            if no_comment:
+                print('[NOT] commenting out unsupported magic commands')
+            else:
+                print('[OK] commenting out unsupported magic commands')
 
     else:
         if in_is_ipynb:
             print('[NOT] showing outputs from converter')
-            print('converting magic commands')
-            print('commenting out unsupported magic commands')
+            print('[OK] converting magic commands')
+            print('[OK] commenting out unsupported magic commands')
         if in_is_py:
             print('[NOT] showing outputs from converter')
             print('[NOT] converting magic commands!')
