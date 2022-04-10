@@ -366,7 +366,7 @@ def main():
         sys.exit(1)
     if extra_args:
         test_args = [element for element in extra_args if element not in args_list]
-        if test_args or extra_args[1] in ['--help', '-h', '?']:
+        if test_args:
             print(f"list of supported arguments:")
             for key, value in args_desc.items():
                 print(key, value)
