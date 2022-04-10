@@ -323,19 +323,24 @@ def main():
     in_is_ipynb = False
     args_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm', '--outputs', '-o', '--log', '-l']
     args_desc = {
-        'Colab-Convert': '\nall flags are optional and have set defaults for best results but have included several flags to enable or disable certain functions on by default\n',
-        '--help': '(-h)\n  Show this help message',
-        '--retain-magic': ' (-rm)\n  Keep magic commands in the output\n      default [ON] for .py input files\n    default [OFF] for .ipynb input files\n',
-        '--convert-magic': ' (-cm)\n  Convert magic commands to python code\n    default [OFF] for .py input files\n    default [ON] for .ipynb input files\n',
-        '--auto-comment': ' (-ac)\n  Convert unsupported magic commands to comments\n    default [OFF] for .py input files\n    default [ON] for .ipynb input files\n',
-        '--no-comment': ' (-nc)\n  Keep unsupported magic commands\n    default [ON] for .py input files\n    default [OFF] for .ipynb input files\n',
-        '--outputs': ' (-o)\n  Outputs console logs of conversions and commented lines.\n    default [OFF]\n',
-        '--log': ' (-l)\n  Same as Outputs\n   default [OFF]',
+        'Colab-Convert': '\nall flags are optional and have set defaults for best results\nuse flags to enable or disable certain functions on by default\n',
+        'Usage:': 'colab-convert <input_file> <output_file> <extra_args>',
+        'Example:': 'colab-convert in.ipynb out.py -nc -rm -o\n',
+        '<input_file>:': 'input file to convert',
+        '<output_file>:': 'output file to write to',
+        '<extra_args>:': 'extra arguments to pass to the converter\n',
+        '--help': '(-h)\n  Show this help message\n',
+        'Available Flags:': 'toggle certain items on or off\n',
+        '  --retain-magic': ' (-rm)\n    Keep magic commands in the output\n        default [ON] for .py input files\n      default [OFF] for .ipynb input files\n',
+        '  --convert-magic': ' (-cm)\n    Convert magic commands to python code\n      default [OFF] for .py input files\n      default [ON] for .ipynb input files\n',
+        '  --auto-comment': ' (-ac)\n    Convert unsupported magic commands to comments\n      default [OFF] for .py input files\n      default [ON] for .ipynb input files\n',
+        '  --no-comment': ' (-nc)\n    Keep unsupported magic commands\n      default [ON] for .py input files\n      default [OFF] for .ipynb input files\n',
+        '  --outputs': ' (-o)\n    Outputs console logs of conversions and commented lines.\n      default [OFF]\n',
+        '  --log': ' (-l)\n    Same as Outputs\n     default [OFF]',
     }
     extra_args = None if not argv[2:] else argv[2:]
 
     if argv[0] in ['--help', '-h', '?']:
-        print(f"list of supported arguments:")
         for key, value in args_desc.items():
             print(key, value)
         sys.exit(1)
@@ -369,7 +374,6 @@ def main():
     if extra_args:
         test_args = [element for element in extra_args if element not in args_list]
         if test_args:
-            print(f"list of supported arguments:")
             for key, value in args_desc.items():
                 print(key, value)
             sys.exit(1)
@@ -378,7 +382,7 @@ def main():
             no_outputs = False
             print('[OK] showing outputs from converter')
         else:
-            print('[NOT] showing outputs from converter')
+            print('[NOT] showing outputs from converter!a')
 
         if '--convert-magic' in extra_args or '-cm' in extra_args or '--retain-magic' in extra_args or '-rm' in extra_args:
             if '--retain-magic' in extra_args or '-rm' in extra_args:
@@ -405,17 +409,17 @@ def main():
                     print('\n    --auto-comment (-ac) takes presidence over --no-comment (-nc)\n'+'    using --auto-comment (-ac)\n')
                 if '--retain-magic' in extra_args or '-rm' in extra_args:
                     print('\n    --retain-magic (-rm) takes presidence over --auto-comment (-ac)\n'+'    using --no-comment (-nc)\n')
-                    print('[NOT] commenting out unsupported magic commands')
+                    print('[NOT] commenting out unsupported magic commands!')
                     no_comment = True
                 else:
                     print('[OK] commenting out unsupported magic commands')
                     no_comment = False
             else:
                 no_comment = True
-                print('[NOT] commenting out unsupported magic commands')
+                print('[NOT] commenting out unsupported magic commands!')
         else:
             if no_comment:
-                print('[NOT] commenting out unsupported magic commands')
+                print('[NOT] commenting out unsupported magic commands!')
             else:
                 print('[OK] commenting out unsupported magic commands')
 
