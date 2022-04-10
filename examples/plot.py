@@ -17,13 +17,29 @@ import numpy as np
 import shutil
 
 if True:
-        !git clone https://github.com/MSFTserver/pytorch3d-lite.git
-        %cd pytorch3d-lite
+    !git clone https://github.com/MSFTserver/pytorch3d-lite.git
+    %cd pytorch3d-lite
 
 %cd ..
-shutil.rmtree(f'{os.getcwd()}/pytorch3d-lite')
+shutil.rmtree('pytorch3d-lite')
 
 %env
+
+%env PATH
+
+%env TEST_COLAB_CONVERT=HELLO
+
+%set_env TEST_COLAB_CONVERT=HELLO
+
+%env TEST_COLAB_CONVERT
+
+%env TEST_COLAB_CONVERT GOODBYE
+
+%set_env TEST_COLAB_CONVERT GOODBYE
+
+%env TEST_COLAB_CONVERT
+
+%testing
 
 x = np.linspace(0, 20, 100)
 plt.plot(x, np.sin(x))
