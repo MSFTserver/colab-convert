@@ -362,7 +362,7 @@ def main():
 
     if argv[0] in help_flags:
         for key, value in flags_desc.items():
-            logging.info(key, value)
+            print(key, value)
         sys.exit(1)
     if in_file_ext == '.py':
         in_is_py = True
@@ -395,7 +395,7 @@ def main():
         test_flags = [element for element in extra_flags if element not in flags_list]
         if test_flags:
             for key, value in flags_desc.items():
-                logging.info(key, value)
+                print(key, value)
             sys.exit(1)
 
         # check for --no-outputs flag
