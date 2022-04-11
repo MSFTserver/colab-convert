@@ -324,14 +324,14 @@ def main():
     args_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm', '--outputs', '-o', '--log', '-l']
     args_desc = {
         'Colab-Convert': '\nall flags are optional and have set defaults for best results\nuse flags to enable or disable certain functions on by default\n',
-        'Usage:': 'colab-convert <input_file> <output_file> <extra_args>',
+        'Usage:': 'colab-convert <input_file> <output_file> <flags>',
         'Example:': 'colab-convert in.ipynb out.py -nc -rm -o\n',
         '<input_file>:': 'input file to convert',
         '<output_file>:': 'output file to write to',
-        '<extra_args>:': 'extra arguments to pass to the converter\n',
+        '<flags>:': 'extra flags to pass to the converter\n',
         '--help': '(-h)\n  Show this help message\n',
         'Available Flags:': 'toggle certain items on or off\n',
-        '  --retain-magic': ' (-rm)\n    Keep magic commands in the output\n        default [ON] for .py input files\n      default [OFF] for .ipynb input files\n',
+        '  --retain-magic': ' (-rm)\n    Keep magic commands in the output\n      default [ON] for .py input files\n      default [OFF] for .ipynb input files\n',
         '  --convert-magic': ' (-cm)\n    Convert magic commands to python code\n      default [OFF] for .py input files\n      default [ON] for .ipynb input files\n',
         '  --auto-comment': ' (-ac)\n    Convert unsupported magic commands to comments\n      default [OFF] for .py input files\n      default [ON] for .ipynb input files\n',
         '  --no-comment': ' (-nc)\n    Keep unsupported magic commands\n      default [ON] for .py input files\n      default [OFF] for .ipynb input files\n',
