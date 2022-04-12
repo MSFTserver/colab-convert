@@ -1,7 +1,22 @@
 import json, sys, time, os, logging
 
+methodName = 'PRINTOUT'.lower()
+if hasattr(logging, 'PRINTOUT'):
+    raise AttributeError('{} already defined in logging module'.format('PRINTOUT'))
+if hasattr(logging, methodName):
+    raise AttributeError('{} already defined in logging module'.format(methodName))
+if hasattr(logging.getLoggerClass(), methodName):
+    raise AttributeError('{} already defined in logger class'.format(methodName))
+def logForLevel(self, message, *args, **kwargs):
+    if self.isEnabledFor(25):
+        self._log(25, message, args, **kwargs)
+def logToRoot(message, *args, **kwargs):
+    logging.log(25, message, *args, **kwargs)
+logging.addLevelName(25, 'PRINTOUT')
+setattr(logging, 'PRINTOUT', 25)
+setattr(logging.getLoggerClass(), methodName, logForLevel)
+setattr(logging, methodName, logToRoot)
 logger= logging.getLogger()
-logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler('cc-outputs.log', 'a', 'utf-8')
 handler.setFormatter(logging.Formatter('%(asctime)s : %(message)s'))
 logger.addHandler(handler)
@@ -11,7 +26,7 @@ magic_list = ["cd","env","set_env"]
 help_flags = ['--help', '-h', '?']
 flags_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm','--no-imports', '-ni', '--outputs', '-o']
 flags_desc = {
-    'Colab-Convert': '\nall flags are optional and have set defaults for best results\nuse flags to enable or disable certain functions on by default\n',
+    'Colab-Convert': '\nall flags are optional and have set defaults for best results\nuse flags to enable or disable certain functions on/off by default\n',
     'Usage:': 'colab-convert <input_file> <output_file> <flags>',
     'Example:': 'colab-convert in.ipynb out.py -nc -rm -o\n',
     '<input_file>:': 'input file to convert',
@@ -25,7 +40,7 @@ flags_desc = {
     '  --auto-comment': ' (-ac)  : Convert unsupported magic commands to comments\n      .py default    [OFF]\n      .ipynb default [ON]',
     '  --no-comment': ' (-nc)    : Keep unsupported magic commands\n      .py default    [ON]\n      .ipynb default [OFF]',
     '  --no-imports': ' (-ni)    : Do not add imports from converted magic commands\n      .py default    [OFF]\n      .ipynb default [OFF]',
-    '  --outputs': ' (-o)        : Outputs console logs of conversions and commented lines.\n      .py default    [OFF]\n      .ipynb default [OFF]',
+    '  --outputs': ' (-o)        : Outputs to console of conversions and commented lines.\n      .py default    [OFF]\n      .ipynb default [OFF]',
 }
 
 def nb2py(notebook, flags):
@@ -80,7 +95,7 @@ def nb2py(notebook, flags):
                 # if magic command includes a '!' bang use subprocess to call the command
                 if strip_line.startswith('!') and flags['c_m']:
                     cmd = strip_line[:-1].replace("!","",1).split(" ")
-                    new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8') #<cc-cm>\n    print(sub_p_res)\n"
+                    new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                     new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8') #<cc-cm>\n{spaces}print(sub_p_res) #<cc-cm>\n"
                     source[x] = new_cmd_spaces
                     if not flags['n_i']:
@@ -88,7 +103,7 @@ def nb2py(notebook, flags):
                             new_import = True
                             sp_added = True
                             new_imports_cell+=f"import subprocess\n"
-                    logging.info(f'[WARN] converted:\n    {strip_line}  to:\n{new_cmd}')
+                    logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n{new_cmd}')
 
                 # if magic command includes a '%' percent convert to python code
                 elif strip_line.startswith('%'):
@@ -101,7 +116,7 @@ def nb2py(notebook, flags):
                         is_cmd = 1
                         if not flags['n_i']:
                             new_import = True
-                            logging.info(f'[WARN] %{cmd[0]} command detected')
+                            logging.printout(f'[WARN] %{cmd[0]} command detected')
                         
                     # if is command, add the new command to the source  
                     if is_cmd:
@@ -147,16 +162,16 @@ def nb2py(notebook, flags):
                                             new_imports_cell+="import os\n"
 
                         if flags['c_m']:
-                            logging.info(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
+                            logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
                     else:
                         if not flags['n_c']:
-                            logging.info(f'[WARN] unsupported command is detected!')
-                            logging.info(f'[WARN] commenting out unsupported command: {strip_line}')
+                            logging.printout('[WARN] unsupported command is detected!')
+                            logging.printout(f'[WARN] commenting out unsupported command: {strip_line.rstrip()}')
                             is_unsupported = 1
                             new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
                         else:
-                            logging.info(f'[WARN] unsupported command is detected!')
-                            logging.info(f'[WARN] NOT commenting out unsupported command: {strip_line}')
+                            logging.printout('[WARN] unsupported command is detected!')
+                            logging.printout(f'[WARN] NOT commenting out unsupported command: {strip_line.rstrip()}')
                             new_cmd_spaces = f"{spaces}{strip_line}"
                     if flags['c_m']:   
                         source[x] = new_cmd_spaces
@@ -166,7 +181,7 @@ def nb2py(notebook, flags):
             result.append("%s%s" % (header_comment+reformat_metadata, ''.join(source)))
     if new_import:
         format_cell_log = '\n'.join(["  " + split_line for split_line in new_imports_cell.split('\n')])
-        logging.info(f'[WARN] adding new imports to the top of the notebook\n{format_cell_log}')
+        logging.printout(f'[WARN] adding new imports to the top of the notebook\n{format_cell_log}')
         format_cell = f'\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
         update_cell = f'{new_imports_cell}\n{format_cell}'
     else:
@@ -231,7 +246,7 @@ def py2nb(py_str, flags):
                                 new_import = True
                                 sp_added = True
                                 new_imports_cell+=f"import subprocess\n"
-                        logging.info(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
+                        logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
 
                      # if magic command includes a '%' [percent] convert to python code
                     elif strip_line.startswith('%'):
@@ -242,7 +257,7 @@ def py2nb(py_str, flags):
                         # check if command is in the list of commands
                         if cmd[0] in magic_list:
                             is_cmd = 1
-                        logging.info(f'[WARN] %{cmd[0]} command detected')
+                        logging.printout(f'[WARN] %{cmd[0]} command detected')
 
                         if is_cmd:
                             if cmd[0] == "cd" and flags['c_m']:
@@ -287,16 +302,16 @@ def py2nb(py_str, flags):
                                                 new_imports_cell+="import os\n"
 
                             if flags['c_m']:
-                                logging.info(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
+                                logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
                         else:
                             if not flags['n_c']:
-                                logging.info(f'[WARN] unsupported command is detected!')
-                                logging.info(f'[WARN] commenting out unsupported command: {strip_line}')
+                                logging.printout(f'[WARN] unsupported command is detected!',)
+                                logging.printout(f'[WARN] commenting out unsupported command: {strip_line.rstrip()}')
                                 is_unsupported = 1
                                 new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
                             else:
-                                logging.info(f'[WARN] unsupported command is detected!')
-                                logging.info(f'[WARN] not commenting out unsupported command: {strip_line}')
+                                logging.printout(f'[WARN] unsupported command is detected!')
+                                logging.printout(f'[WARN] not commenting out unsupported command: {strip_line.rstrip()}')
                                 new_cmd_spaces = f"{spaces}{strip_line}"
                         if flags['c_m']:   
                             chunk[x] = new_cmd_spaces
@@ -314,7 +329,7 @@ def py2nb(py_str, flags):
     }
 
     if new_import:
-        logging.info('[WARN] adding new imports to the top of the notebook')
+        logging.printout('[WARN] adding new imports to the top of the notebook')
         notebook['cells'].insert(0, {
                 'cell_type': 'code',
                 'metadata': new_imports_meta,
@@ -347,14 +362,16 @@ def convert(in_file, out_file, extra_flags):
 
 
 def main():
+    logger.setLevel(logging.INFO)
     logging.info('---------------------------')
     logging.info('----------[START]----------')
     logging.info('---------------------------')
+    logger.addHandler(logging.StreamHandler(sys.stdout))
     argv = sys.argv[1:]
 
     if len(argv) == 0:
-        logging.info("please specify atleast one file to convert")
-        logging.info('Usage: colab-convert <input_file> <output_file> <extra_flags>')
+        logging.error("please specify atleast one file to convert")
+        logging.error('Usage: colab-convert <input_file> <output_file> <extra_flags>')
         sys.exit(1)
     if len(argv) == 1:
         argv.append('out')
@@ -375,7 +392,7 @@ def main():
     elif in_file_ext == '.ipynb':
         in_is_ipynb = True
     else:
-        logging.info('Input file must be .ipynb or .py')
+        logging.error('Input file must be .ipynb or .py')
         sys.exit(1)
     if argv[1] == 'out':
         if in_is_ipynb:
@@ -384,7 +401,7 @@ def main():
         if in_is_py:
             argv[1] += '.ipynb'
             out_file_ext = '.ipynb'
-        logging.info(f'setting output file to {argv[1]}')
+        logging.warn(f'setting output file to {argv[1]}')
     #default flags
     if in_is_ipynb:
         convert_magic = True
@@ -395,7 +412,7 @@ def main():
         no_comment = True
         no_imports = False
     if out_file_ext != '.ipynb' and out_file_ext != '.py':
-        logging.info('Output file must be .ipynb or .py')
+        logging.error('Output file must be .ipynb or .py')
         sys.exit(1)
     if extra_flags:
         test_flags = [element for element in extra_flags if element not in flags_list]
@@ -404,21 +421,14 @@ def main():
                 print(key, value)
             sys.exit(1)
 
-        # check for --no-outputs flag
-        if '--outputs' in extra_flags or '-o' in extra_flags:
-            logger.addHandler(logging.StreamHandler(sys.stdout))
-            logging.info('[OK]   showing outputs from converter')
-        else:
-            logging.info('[NOT]  showing outputs from converter!')
-
         # check for --convert-magic and --retain-magic flags
         if '--convert-magic' in extra_flags or '-cm' in extra_flags or '--retain-magic' in extra_flags or '-rm' in extra_flags:
             # if --retain-magic and --convert-magic flag are present 
             # then --convert-magic is negated for --retain-magic [-cm -rm = -rm]
             if '--retain-magic' in extra_flags or '-rm' in extra_flags:
                 if '--convert-magic' in extra_flags or '-cm' in extra_flags:
-                    logging.info('[WARN] --retain-magic (-rm) takes presidence over --convert-magic (-cm)')
-                    logging.info('[WARN] using --retain-magic (-rm)')
+                    logging.warn('[WARN] --retain-magic (-rm) takes presidence over --convert-magic (-cm)')
+                    logging.warn('[WARN] using --retain-magic (-rm)')
                 logging.info('[NOT]  converting magic commands!')
                 convert_magic = False
             else:
@@ -437,8 +447,8 @@ def main():
             # then --no-comment is negated for --auto-comment [-nc -ac = -ac]
             if '--auto-comment' in extra_flags or '-ac' in extra_flags:
                 if '--no-comment' in extra_flags or '-nc' in extra_flags:
-                    logging.info('[WARN] --auto-comment (-ac) takes presidence over --no-comment (-nc)')
-                    logging.info('[WARN] using --auto-comment (-ac)')
+                    logging.warn('[WARN] --auto-comment (-ac) takes presidence over --no-comment (-nc)')
+                    logging.warn('[WARN] using --auto-comment (-ac)')
                 logging.info('[OK]   commenting out unsupported magic commands')
                 no_comment = False
             else:
@@ -458,28 +468,37 @@ def main():
         else:
             if not convert_magic:
                 if '--retain-magic' in extra_flags or '-rm' in extra_flags:
-                    logging.info('[WARN] --retain-magic is detected, new imports will NOT be made')
+                    logging.warn('[WARN] --retain-magic is detected, new imports will NOT be made')
                 else:
-                    logging.info('[WARN] default settings is retaining magic commands')
+                    logging.warn('[WARN] default settings is retaining magic commands')
                 no_imports = True
                 logging.info('[NOT]  keeping new imports made by cc')
             else:
                 logging.info('[OK]   keeping new imports made by cc')
 
+        # check for --no-outputs flag
+        if '--outputs' in extra_flags or '-o' in extra_flags:
+            logging.info('[OK]   showing outputs from cc')
+        else:
+            logging.info('[NOT]  showing outputs from cc!')
+            logger.removeHandler(logger.handlers[-1])
+
     # set defaults per files if no flags are set
     else:
         if in_is_ipynb:
-            logging.info('[OK]   logging outputs from converter')
-            logging.info('[NOT]  showing outputs from converter')
+            logging.info('[OK]   logging outputs from cc')
+            logging.info('[NOT]  showing outputs from cc')
             logging.info('[OK]   converting magic commands')
             logging.info('[OK]   commenting out unsupported magic commands')
             logging.info('[OK]   keeping new imports made by cc')
+            logger.removeHandler(logger.handlers[-1])
         if in_is_py:
-            logging.info('[OK]   logging outputs from converter')
-            logging.info('[NOT]  showing outputs from converter')
+            logging.info('[OK]   logging outputs from cc')
+            logging.info('[NOT]  showing outputs from cc')
             logging.info('[NOT]  converting magic commands!')
             logging.info('[NOT]  commenting out unsupported magic commands!')
             logging.info('[OK]   keeping new imports made by cc')
+            logger.removeHandler(logger.handlers[-1])
     
     flags = {'c_m': convert_magic, 'n_c': no_comment , 'n_i': no_imports}
 
@@ -491,7 +510,7 @@ def main():
 
     print('Finished!')
     print(f'conversion took {round(end_time - start_time, 6)} seconds')
-    print(f'\nlog file output to cc-output.log')
+    print(f'\nlog file output to cc-outputs.log')
 
 if __name__ == '__main__':
     main()
