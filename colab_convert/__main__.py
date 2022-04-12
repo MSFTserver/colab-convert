@@ -491,6 +491,7 @@ def main():
 
     print('Finished!')
     print(f'conversion took {round(end_time - start_time, 6)} seconds')
+    print(f'\nlog file output to cc-output.log')
 
 if __name__ == '__main__':
     main()
