@@ -1,5 +1,7 @@
 import json, sys, time, os, logging
 
+# set up logging, adds new logger mode and level
+log_file = 'cc-outputs.log'
 methodName = 'PRINTOUT'.lower()
 if hasattr(logging, 'PRINTOUT'):
     raise AttributeError('{} already defined in logging module'.format('PRINTOUT'))
@@ -17,11 +19,27 @@ setattr(logging, 'PRINTOUT', 25)
 setattr(logging.getLoggerClass(), methodName, logForLevel)
 setattr(logging, methodName, logToRoot)
 logger= logging.getLogger()
-handler = logging.FileHandler('cc-outputs.log', 'a', 'utf-8')
+handler = logging.FileHandler(log_file, 'a', 'utf-8')
 handler.setFormatter(logging.Formatter('%(asctime)s : %(message)s'))
 logger.addHandler(handler)
 
+# default conversion code
 header_comment = '# %%\n'
+cc_auto_comment = '#<cc-ac>'
+cc_trailing_comment = ' #<cc-cm>'
+cc_import_comment = '#<cc-imports>\n'
+default_env_cmd = [f'for k, v in os.environ.items():{cc_trailing_comment}\n',f"    print(f'{{k}}={{v}}'){cc_trailing_comment}\n"]
+os_import = "import os\n"
+sp_import = "import subprocess\n"
+new_imports_meta_py = '# !! {"metadata":{\n# !!   "id":"cc-imports"\n# !! }'+"}\n"
+new_imports_cell_py = f"{header_comment}{new_imports_meta_py}\n{cc_import_comment}\n"
+new_imports_meta_ipy = {'id':'cc-imports'}
+new_imports_cell_ipy = cc_import_comment
+new_import = False
+os_added = False
+sp_added = False
+
+# default options
 magic_list = ["cd","env","set_env"]
 help_flags = ['--help', '-h', '?']
 flags_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm','--no-imports', '-ni', '--outputs', '-o']
@@ -43,18 +61,27 @@ flags_desc = {
     '  --outputs': ' (-o)        : Outputs to console of conversions and commented lines.\n      .py default    [OFF]\n      .ipynb default [OFF]',
 }
 
+def check_imports(add_import,flags,f_type):
+    strip_import = add_import.replace('import ','').replace('\n','')
+    if not flags['n_i']:
+        if not os_added or not sp_added:
+            if strip_import == 'os':
+                globals()['os_added'] = True
+            if strip_import == 'subprocess':
+                globals()['sp_added'] = True
+            if f_type == 'ipy':
+                globals()['new_imports_cell_ipy']+=add_import
+            if f_type == 'py':
+                globals()['new_imports_cell_py']+=add_import
+            globals()['new_import'] = True
+
+# convert notebook to python
 def nb2py(notebook, flags):
     result = []
     cells = notebook['cells']
 
     main_metadata = json.dumps(notebook['metadata'],indent=2).split("\n")
     reformat_main_metadata = '# !! {"main_metadata":'
-
-    new_imports_meta = '# !! {"metadata":{\n# !!   "id":"colab-convert"\n# !! }'+"}\n"
-    new_imports_cell = f"{header_comment}{new_imports_meta}\n#<cc-imports>\n"
-    new_import = False
-    os_added = False
-    sp_added = False
 
     for key in main_metadata:
         if key == '{':
@@ -96,13 +123,9 @@ def nb2py(notebook, flags):
                 if strip_line.startswith('!') and flags['c_m']:
                     cmd = strip_line[:-1].replace("!","",1).split(" ")
                     new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
-                    new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8') #<cc-cm>\n{spaces}print(sub_p_res) #<cc-cm>\n"
+                    new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(sub_p_res){cc_trailing_comment}\n"
                     source[x] = new_cmd_spaces
-                    if not flags['n_i']:
-                        if not sp_added:
-                            new_import = True
-                            sp_added = True
-                            new_imports_cell+=f"import subprocess\n"
+                    check_imports(sp_import,flags,'py')
                     logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n{new_cmd}')
 
                 # if magic command includes a '%' percent convert to python code
@@ -122,44 +145,29 @@ def nb2py(notebook, flags):
                     if is_cmd:
                         if cmd[0] == "cd" and flags['c_m']:
                             new_cmd = f"os.chdir('{cmd[1]}')\n"
-                            new_cmd_spaces = f"{spaces}os.chdir('{cmd[1]}') #<cc-cm>\n"
-                            if not flags['n_i']:
-                                if not os_added:
-                                    os_added = True
-                                    new_imports_cell+="import os\n"
+                            new_cmd_spaces = f"{spaces}os.chdir('{cmd[1]}'){cc_trailing_comment}\n"
+                            check_imports(os_import,flags,'py')
 
                         if cmd[0] == "env" or cmd[0] == "set_env" and flags['c_m']:
                             if len(cmd) > 1 or cmd[0] == "set_env":
                                 if len(cmd) == 2:
                                     if '=' in cmd[1]:
                                         new_cmd = f"os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}'\n"
-                                        new_cmd_spaces = f"{spaces}os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}' #<cc-cm>\n"
-                                        if not flags['n_i']:
-                                            if not os_added:
-                                                os_added = True
-                                                new_imports_cell+="import os\n"
+                                        new_cmd_spaces = f"{spaces}os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}'{cc_trailing_comment}\n"
+                                        check_imports(os_import,flags,'py')
                                     else:
                                         new_cmd = f"os.environ['{cmd[1]}']\n"
-                                        new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] #<cc-cm>\n"
-                                        if not flags['n_i']:
-                                            if not os_added:
-                                                os_added = True
-                                                new_imports_cell+="import os\n"
+                                        new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}']{cc_trailing_comment}\n"
+                                        check_imports(os_import,flags,'py')
                                 else:
                                     new_cmd = f"os.environ['{cmd[1]}'] = '{cmd[2]}'\n"
-                                    new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] = '{cmd[2]}' #<cc-cm>\n"
-                                    if not flags['n_i']:
-                                        if not os_added:
-                                            os_added = True
-                                            new_imports_cell+="import os\n"
+                                    new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] = '{cmd[2]}'{cc_trailing_comment}\n"
+                                    check_imports(os_import,flags,'py')
                             else:
                                 if flags['c_m']:
-                                    new_cmd = f"for k, v in os.environ.items():\n"+"        print(f'{k}={v}')\n"
-                                    new_cmd_spaces = f"{spaces}for k, v in os.environ.items(): #<cc-cm>\n{spaces}"+"    print(f'{k}={v}') #<cc-cm>\n"
-                                    if not flags['n_i']:
-                                        if not os_added:
-                                            os_added = True
-                                            new_imports_cell+="import os\n"
+                                    new_cmd = f"{default_env_cmd[0]}    {default_env_cmd[1]}".replace(cc_trailing_comment,"")
+                                    new_cmd_spaces = f"{spaces}{default_env_cmd[0]}{spaces}{default_env_cmd[1]}"
+                                    check_imports(os_import,flags,'py')
 
                         if flags['c_m']:
                             logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
@@ -168,7 +176,7 @@ def nb2py(notebook, flags):
                             logging.printout('[WARN] unsupported command is detected!')
                             logging.printout(f'[WARN] commenting out unsupported command: {strip_line.rstrip()}')
                             is_unsupported = 1
-                            new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
+                            new_cmd_spaces = f"{spaces}{cc_auto_comment} {strip_line}"
                         else:
                             logging.printout('[WARN] unsupported command is detected!')
                             logging.printout(f'[WARN] NOT commenting out unsupported command: {strip_line.rstrip()}')
@@ -180,28 +188,24 @@ def nb2py(notebook, flags):
                 x+=1
             result.append("%s%s" % (header_comment+reformat_metadata, ''.join(source)))
     if new_import:
-        format_cell_log = '\n'.join(["  " + split_line for split_line in new_imports_cell.split('\n')])
+        format_cell_log = '\n'.join(["  " + split_line for split_line in new_imports_cell_py.split('\n')])
         logging.printout(f'[WARN] adding new imports to the top of the notebook\n{format_cell_log}')
         format_cell = f'\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
-        update_cell = f'{new_imports_cell}\n{format_cell}'
+        update_cell = f'{new_imports_cell_py}\n{format_cell}'
     else:
         update_cell = '\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
 
     return update_cell
 
+# convert python to notebook
 def py2nb(py_str, flags):
+
     # remove leading header comment
     if py_str.startswith(header_comment):
         py_str = py_str[len(header_comment):]
 
     cells = []
     chunks = py_str.split('\n\n%s' % header_comment)
-
-    new_imports_meta = {'id':'colab-convert'}
-    new_imports_cell = f"#<cc-imports>\n"
-    new_import = False
-    os_added = False
-    sp_added = False
 
     for chunk in chunks:
         new_json = {'metadata':{}}
@@ -239,14 +243,10 @@ def py2nb(py_str, flags):
                     if strip_line.startswith('!') and flags['c_m']:
                         cmd = strip_line[:-1].replace("!","",1).split(" ")
                         new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
-                        new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8') #<cc-cm>\n{spaces}print(sub_p_res) #<cc-cm>\n"
+                        new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(sub_p_res){cc_trailing_comment}\n"
                         chunk[x] = new_cmd_spaces
-                        if not flags['n_i']:
-                            if not sp_added:
-                                new_import = True
-                                sp_added = True
-                                new_imports_cell+=f"import subprocess\n"
-                        logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
+                        check_imports(sp_import,flags,'ipy')
+                        logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n{new_cmd}')
 
                      # if magic command includes a '%' [percent] convert to python code
                     elif strip_line.startswith('%'):
@@ -264,44 +264,29 @@ def py2nb(py_str, flags):
                         if is_cmd:
                             if cmd[0] == "cd" and flags['c_m']:
                                 new_cmd = f"os.chdir('{cmd[1]}')\n"
-                                new_cmd_spaces = f"{spaces}os.chdir('{cmd[1]}') #<cc-cm>\n"
-                                if not flags['n_i']:
-                                    if not os_added:
-                                        os_added = True
-                                        new_imports_cell+="import os\n"
+                                new_cmd_spaces = f"{spaces}os.chdir('{cmd[1]}'){cc_trailing_comment}\n"
+                                check_imports(os_import,flags,'ipy')
                             
                             if cmd[0] == "env" or cmd[0] == "set_env" and flags['c_m']:
                                 if len(cmd) > 1 or cmd[0] == "set_env":
                                     if len(cmd) == 2:
                                         if '=' in cmd[1]:
                                             new_cmd = f"os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}'\n"
-                                            new_cmd_spaces = f"{spaces}os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}' #<cc-cm>\n"
-                                            if not flags['n_i']:
-                                                if not os_added:
-                                                    os_added = True
-                                                    new_imports_cell+="import os\n"
+                                            new_cmd_spaces = f"{spaces}os.environ['{cmd[1].split('=')[0]}'] = '{cmd[1].split('=')[1]}'{cc_trailing_comment}\n"
+                                            check_imports(os_import,flags,'ipy')
                                         else:
                                             new_cmd = f"os.environ['{cmd[1]}']\n"
-                                            new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] #<cc-cm>\n"
-                                            if not flags['n_i']:
-                                                if not os_added:
-                                                    os_added = True
-                                                    new_imports_cell+="import os\n"
+                                            new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}']{cc_trailing_comment}\n"
+                                            check_imports(os_import,flags,'ipy')
                                     else:
                                         new_cmd = f"os.environ['{cmd[1]}'] = '{cmd[2]}'\n"
-                                        new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] = '{cmd[2]}' #<cc-cm>\n"
-                                        if not flags['n_i']:
-                                            if not os_added:
-                                                os_added = True
-                                                new_imports_cell+="import os\n"
+                                        new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] = '{cmd[2]}'{cc_trailing_comment}\n"
+                                        check_imports(os_import,flags,'ipy')
                                 else:
                                     if flags['c_m']:
-                                        new_cmd = f"for k, v in os.environ.items():\n"+"        print(f'{k}={v}')\n"
-                                        new_cmd_spaces = f"{spaces}for k, v in os.environ.items(): #<cc-cm>\n{spaces}"+"    print(f'{k}={v}') #<cc-cm>\n"
-                                        if not flags['n_i']:
-                                            if not os_added:
-                                                os_added = True
-                                                new_imports_cell+="import os\n"
+                                        new_cmd = f"{default_env_cmd[0]}    {default_env_cmd[1]}".replace(cc_trailing_comment,"")
+                                        new_cmd_spaces = f"{spaces}{default_env_cmd[0]}{spaces}{default_env_cmd[1]}"
+                                        check_imports(os_import,flags,'ipy')
 
                             if flags['c_m']:
                                 logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
@@ -310,7 +295,7 @@ def py2nb(py_str, flags):
                                 logging.printout(f'[WARN] unsupported command is detected!',)
                                 logging.printout(f'[WARN] commenting out unsupported command: {strip_line.rstrip()}')
                                 is_unsupported = 1
-                                new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
+                                new_cmd_spaces = f"{spaces}{cc_auto_comment} {strip_line}"
                             else:
                                 logging.printout(f'[WARN] unsupported command is detected!')
                                 logging.printout(f'[WARN] not commenting out unsupported command: {strip_line.rstrip()}')
@@ -330,12 +315,12 @@ def py2nb(py_str, flags):
           'nbformat_minor': 4
     }
 
-    if new_import:
+    if globals()['new_import']:
         logging.printout('[WARN] adding new imports to the top of the notebook')
         notebook['cells'].insert(0, {
                 'cell_type': 'code',
-                'metadata': new_imports_meta,
-                'source': [e+'\n' for e in new_imports_cell.split('\n') if e]
+                'metadata': new_imports_meta_ipy,
+                'source': [e+'\n' for e in new_imports_cell_ipy.split('\n') if e]
             })
 
     return notebook
@@ -476,6 +461,7 @@ def main():
                 no_imports = True
                 logging.info('[NOT]  keeping new imports made by cc')
             else:
+                no_imports = False
                 logging.info('[OK]   keeping new imports made by cc')
 
         # check for --no-outputs flag
@@ -510,7 +496,7 @@ def main():
 
     print('Finished!')
     print(f'conversion took {round(end_time - start_time, 6)} seconds')
-    print(f'\nlog file output to cc-outputs.log')
+    print(f'\nlog file created:\n{os.getcwd()}{os.sep}{log_file}')
 
 if __name__ == '__main__':
     main()
