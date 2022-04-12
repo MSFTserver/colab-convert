@@ -2,7 +2,7 @@ import json, sys, time, os, logging
 
 logger= logging.getLogger()
 logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler('cc-outputs.log', 'w+', 'utf-8')
+handler = logging.FileHandler('cc-outputs.log', 'a', 'utf-8')
 handler.setFormatter(logging.Formatter('%(asctime)s : %(message)s'))
 logger.addHandler(handler)
 
@@ -88,7 +88,7 @@ def nb2py(notebook, flags):
                             new_import = True
                             sp_added = True
                             new_imports_cell+=f"import subprocess\n"
-                    logging.info(f'  converted:\n    {strip_line}  to:\n  {new_cmd}')
+                    logging.info(f'[WARN] converted:\n    {strip_line}  to:\n{new_cmd}')
 
                 # if magic command includes a '%' percent convert to python code
                 elif strip_line.startswith('%'):
@@ -101,7 +101,7 @@ def nb2py(notebook, flags):
                         is_cmd = 1
                         if not flags['n_i']:
                             new_import = True
-                            logging.info(f'%{cmd[0]} command detected')
+                            logging.info(f'[WARN] %{cmd[0]} command detected')
                         
                     # if is command, add the new command to the source  
                     if is_cmd:
@@ -147,16 +147,16 @@ def nb2py(notebook, flags):
                                             new_imports_cell+="import os\n"
 
                         if flags['c_m']:
-                            logging.info(f'  converted:\n    {strip_line}  to:\n    {new_cmd}')
+                            logging.info(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
                     else:
                         if not flags['n_c']:
-                            logging.info(f'unsupported command is detected!')
-                            logging.info(f'  commenting out unsupported command:\n    {strip_line}')
+                            logging.info(f'[WARN] unsupported command is detected!')
+                            logging.info(f'[WARN] commenting out unsupported command: {strip_line}')
                             is_unsupported = 1
                             new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
                         else:
-                            logging.info(f'unsupported command is detected!')
-                            logging.info(f'  not commenting out unsupported command:\n    {strip_line}')
+                            logging.info(f'[WARN] unsupported command is detected!')
+                            logging.info(f'[WARN] NOT commenting out unsupported command: {strip_line}')
                             new_cmd_spaces = f"{spaces}{strip_line}"
                     if flags['c_m']:   
                         source[x] = new_cmd_spaces
@@ -165,6 +165,8 @@ def nb2py(notebook, flags):
                 x+=1
             result.append("%s%s" % (header_comment+reformat_metadata, ''.join(source)))
     if new_import:
+        format_cell_log = '\n'.join(["  " + split_line for split_line in new_imports_cell.split('\n')])
+        logging.info(f'[WARN] adding new imports to the top of the notebook\n{format_cell_log}')
         format_cell = f'\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
         update_cell = f'{new_imports_cell}\n{format_cell}'
     else:
@@ -229,7 +231,7 @@ def py2nb(py_str, flags):
                                 new_import = True
                                 sp_added = True
                                 new_imports_cell+=f"import subprocess\n"
-                        logging.info(f'  converted:\n    {strip_line}  to:\n{new_cmd}')
+                        logging.info(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
 
                      # if magic command includes a '%' [percent] convert to python code
                     elif strip_line.startswith('%'):
@@ -240,7 +242,7 @@ def py2nb(py_str, flags):
                         # check if command is in the list of commands
                         if cmd[0] in magic_list:
                             is_cmd = 1
-                        logging.info(f'%{cmd[0]} command detected')
+                        logging.info(f'[WARN] %{cmd[0]} command detected')
 
                         if is_cmd:
                             if cmd[0] == "cd" and flags['c_m']:
@@ -285,16 +287,16 @@ def py2nb(py_str, flags):
                                                 new_imports_cell+="import os\n"
 
                             if flags['c_m']:
-                                logging.info(f'  converted:\n    {strip_line}  to:\n    {new_cmd}')
+                                logging.info(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
                         else:
                             if not flags['n_c']:
-                                logging.info(f'unsupported command is detected!')
-                                logging.info(f'  commenting out unsupported command:\n    {strip_line}')
+                                logging.info(f'[WARN] unsupported command is detected!')
+                                logging.info(f'[WARN] commenting out unsupported command: {strip_line}')
                                 is_unsupported = 1
                                 new_cmd_spaces = f"{spaces}#<cc-ac> {strip_line}"
                             else:
-                                logging.info(f'unsupported command is detected!')
-                                logging.info(f'  not commenting out unsupported command:\n    {strip_line}')
+                                logging.info(f'[WARN] unsupported command is detected!')
+                                logging.info(f'[WARN] not commenting out unsupported command: {strip_line}')
                                 new_cmd_spaces = f"{spaces}{strip_line}"
                         if flags['c_m']:   
                             chunk[x] = new_cmd_spaces
@@ -312,6 +314,7 @@ def py2nb(py_str, flags):
     }
 
     if new_import:
+        logging.info('[WARN] adding new imports to the top of the notebook')
         notebook['cells'].insert(0, {
                 'cell_type': 'code',
                 'metadata': new_imports_meta,
@@ -344,6 +347,9 @@ def convert(in_file, out_file, extra_flags):
 
 
 def main():
+    logging.info('---------------------------')
+    logging.info('----------[START]----------')
+    logging.info('---------------------------')
     argv = sys.argv[1:]
 
     if len(argv) == 0:
