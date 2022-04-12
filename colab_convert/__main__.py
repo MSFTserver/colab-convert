@@ -33,7 +33,7 @@ flags_desc = {
     '<output_file>:': 'output file to write to',
     '<flags>:': 'extra flags to pass to the converter\n',
     '--help': '(-h)\n  Show this help message\n',
-    'Default Flags Set (defaults are determined by input file)': '\n  ipynb input file:\n    [YES] convert magic , [YES] auto comment , [YES] imports , [NO] Outputs\n  py input file:\n    [NO] convert magic , [NO] auto comment , [N/A] imports , [NO] Outputs\n',
+    'Default Flags Set (defaults are determined by input file)': '\n  ipynb input file:\n    [YES] convert magic , [YES] auto comment , [YES] imports , [NO] Outputs\n  py input file:\n    [NO] convert magic , [NO] auto comment , [NO] imports , [NO] Outputs\n',
     'Available Flags': '\n  toggle certain items on or off\n',
     '  --retain-magic': ' (-rm)  : Keep magic commands in the output\n      .py default    [ON]\n      .ipynb default [OFF]',
     '  --convert-magic': ' (-cm) : Convert magic commands to python code\n      .py default    [OFF]\n      .ipynb default [ON]',
@@ -257,7 +257,9 @@ def py2nb(py_str, flags):
                         # check if command is in the list of commands
                         if cmd[0] in magic_list:
                             is_cmd = 1
-                        logging.printout(f'[WARN] %{cmd[0]} command detected')
+                            if not flags['n_i']:
+                                new_import = True
+                                logging.printout(f'[WARN] %{cmd[0]} command detected')
 
                         if is_cmd:
                             if cmd[0] == "cd" and flags['c_m']:
@@ -410,7 +412,7 @@ def main():
     if in_is_py:
         convert_magic = False
         no_comment = True
-        no_imports = False
+        no_imports = True
     if out_file_ext != '.ipynb' and out_file_ext != '.py':
         logging.error('Output file must be .ipynb or .py')
         sys.exit(1)
@@ -486,18 +488,16 @@ def main():
     # set defaults per files if no flags are set
     else:
         if in_is_ipynb:
-            logging.info('[OK]   logging outputs from cc')
             logging.info('[NOT]  showing outputs from cc')
             logging.info('[OK]   converting magic commands')
             logging.info('[OK]   commenting out unsupported magic commands')
             logging.info('[OK]   keeping new imports made by cc')
             logger.removeHandler(logger.handlers[-1])
         if in_is_py:
-            logging.info('[OK]   logging outputs from cc')
             logging.info('[NOT]  showing outputs from cc')
             logging.info('[NOT]  converting magic commands!')
             logging.info('[NOT]  commenting out unsupported magic commands!')
-            logging.info('[OK]   keeping new imports made by cc')
+            logging.info('[NOT]  keeping new imports made by cc')
             logger.removeHandler(logger.handlers[-1])
     
     flags = {'c_m': convert_magic, 'n_c': no_comment , 'n_i': no_imports}
