@@ -6,10 +6,10 @@
 # plase do not change the varible names or command flag names like --help/-h --retain-magic/-rm ect.
 # only edit the message after the equal sign and also do not change the command flag names
 
-##############
-##  German  ##
-##   de_DE  ##
-##############
+#############
+##  Dutch  ##
+##  nl_NL  ##
+#############
 
 # default messages
 is_warn = '[WARN]'
