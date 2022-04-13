@@ -22,13 +22,13 @@ logger= logging.getLogger()
 handler = logging.FileHandler(log_file, 'a', 'utf-8')
 handler.setFormatter(logging.Formatter('%(asctime)s : %(message)s'))
 logger.addHandler(handler)
+log_start_msg = '\n---------------------------\n----------[START]----------\n---------------------------'
 
 # default conversion code
 header_comment = '# %%\n'
 cc_auto_comment = '#<cc-ac>'
 cc_trailing_comment = ' #<cc-cm>'
 cc_import_comment = '#<cc-imports>\n'
-default_env_cmd = [f'for k, v in os.environ.items():{cc_trailing_comment}\n',f"    print(f'{{k}}={{v}}'){cc_trailing_comment}\n"]
 os_import = "import os\n"
 sp_import = "import subprocess\n"
 new_imports_meta_py = '# !! {"metadata":{\n# !!   "id":"cc-imports"\n# !! }'+"}\n"
@@ -38,6 +38,41 @@ new_imports_cell_ipy = cc_import_comment
 new_import = False
 os_added = False
 sp_added = False
+
+#default messages
+is_warn = '[WARN]'
+is_on = '[OK]'
+is_off = '[NOT]'
+outputs_msg = 'showing outputs from cc'
+convert_magic_msg = 'convert magic commands'
+un_comment_msg = 'commenting out unsupported magic commands'
+imports_msg = 'keeping new imports made by cc'
+add_imports_cell_msg = 'adding new imports to the top of the file'
+help_called_msg = 'help message called'
+file_ext_msg = 'file must be .ipynb or .py'
+set_output_ext_msg = 'setting output file to'
+specify_file_msg = 'please specify atleast one file to convert'
+usage_msg = 'Usage: colab-convert <input_file> <output_file> <extra_flags>'
+un_command_det_msg = 'unsupported command is detected!'
+comment_un_cmd_msg = 'commenting out unsupported command'
+def_set_ret_mag_msg = 'default settings is retaining magic commands'
+ret_mag_det_msg = '--retain-magic is detected, new imports will NOT be made'
+convert_time_msg = 'conversion took'
+log_file_msg = 'log file created'
+ac_over_nc_msg = '--auto-comment (-ac) takes presidence over --no-comment (-nc)'
+ac_over_nc_fall_msg = 'using --auto-comment (-ac)'
+rm_over_cm_msg = '--retain-magic (-rm) takes presidence over --convert-magic (-cm)'
+rm_over_cm_fall_msg = 'using --retain-magic (-rm)'
+cmd_det_msg = 'command detected'
+
+#default words
+convert_wrd = 'convert'
+converted_wrd = f'{convert_wrd}ed'
+finished_wrd = 'finished'
+to_wrd = 'to'
+seconds_wrd = 'seconds'
+input_wrd = 'input'
+output_wrd = 'output'
 
 # default options
 magic_list = ["cd","env","set_env"]
@@ -122,11 +157,12 @@ def nb2py(notebook, flags):
                 # if magic command includes a '!' bang use subprocess to call the command
                 if strip_line.startswith('!') and flags['c_m']:
                     cmd = strip_line[:-1].replace("!","",1).split(" ")
+                    logging.printout(f'{is_warn} !{cmd[0]} {cmd_det_msg}')
                     new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                     new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(sub_p_res){cc_trailing_comment}\n"
                     source[x] = new_cmd_spaces
                     check_imports(sp_import,flags,'py')
-                    logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n{new_cmd}')
+                    logging.printout(f'{is_warn} {converted_wrd}:\n    {strip_line}  {to_wrd}:\n{new_cmd}')
 
                 # if magic command includes a '%' percent convert to python code
                 elif strip_line.startswith('%'):
@@ -139,7 +175,7 @@ def nb2py(notebook, flags):
                         is_cmd = 1
                         if not flags['n_i']:
                             new_import = True
-                            logging.printout(f'[WARN] %{cmd[0]} command detected')
+                            logging.printout(f'{is_warn} %{cmd[0]} {cmd_det_msg}')
                         
                     # if is command, add the new command to the source  
                     if is_cmd:
@@ -165,21 +201,21 @@ def nb2py(notebook, flags):
                                     check_imports(os_import,flags,'py')
                             else:
                                 if flags['c_m']:
-                                    new_cmd = f"{default_env_cmd[0]}    {default_env_cmd[1]}".replace(cc_trailing_comment,"")
-                                    new_cmd_spaces = f"{spaces}{default_env_cmd[0]}{spaces}{default_env_cmd[1]}"
+                                    new_cmd = f"for k, v in os.environ.items():\n    print(f'{{k}}={{v}}')\n"
+                                    new_cmd_spaces = f"{spaces}for k, v in os.environ.items():{cc_trailing_comment}\n{spaces}    print(f'{{k}}={{v}}'){cc_trailing_comment}\n"
                                     check_imports(os_import,flags,'py')
 
                         if flags['c_m']:
-                            logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
+                            logging.printout(f'{is_warn} {converted_wrd}:\n    {strip_line}  {to_wrd}:\n    {new_cmd}')
                     else:
                         if not flags['n_c']:
-                            logging.printout('[WARN] unsupported command is detected!')
-                            logging.printout(f'[WARN] commenting out unsupported command: {strip_line.rstrip()}')
+                            logging.printout(f'{is_warn} {un_command_det_msg}')
+                            logging.printout(f'{is_off}  {comment_un_cmd_msg}: {strip_line.rstrip()}')
                             is_unsupported = 1
                             new_cmd_spaces = f"{spaces}{cc_auto_comment} {strip_line}"
                         else:
-                            logging.printout('[WARN] unsupported command is detected!')
-                            logging.printout(f'[WARN] NOT commenting out unsupported command: {strip_line.rstrip()}')
+                            logging.printout(f'{is_warn} {un_command_det_msg}')
+                            logging.printout(f'{is_off}  {comment_un_cmd_msg}: {strip_line.rstrip()}')
                             new_cmd_spaces = f"{spaces}{strip_line}"
                     if flags['c_m']:   
                         source[x] = new_cmd_spaces
@@ -189,7 +225,7 @@ def nb2py(notebook, flags):
             result.append("%s%s" % (header_comment+reformat_metadata, ''.join(source)))
     if new_import:
         format_cell_log = '\n'.join(["  " + split_line for split_line in new_imports_cell_py.split('\n')])
-        logging.printout(f'[WARN] adding new imports to the top of the notebook\n{format_cell_log}')
+        logging.printout(f'{is_warn} {add_imports_cell_msg}\n{format_cell_log}')
         format_cell = f'\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
         update_cell = f'{new_imports_cell_py}\n{format_cell}'
     else:
@@ -242,11 +278,12 @@ def py2nb(py_str, flags):
                     # if magic command includes a '!' [bang] use subprocess to call the command
                     if strip_line.startswith('!') and flags['c_m']:
                         cmd = strip_line[:-1].replace("!","",1).split(" ")
+                        logging.printout(f'{is_warn} !{cmd[0]} {cmd_det_msg}')
                         new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                         new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(sub_p_res){cc_trailing_comment}\n"
                         chunk[x] = new_cmd_spaces
                         check_imports(sp_import,flags,'ipy')
-                        logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n{new_cmd}')
+                        logging.printout(f'{is_warn} {converted_wrd}:\n    {strip_line}  {to_wrd}:\n{new_cmd}')
 
                      # if magic command includes a '%' [percent] convert to python code
                     elif strip_line.startswith('%'):
@@ -259,7 +296,7 @@ def py2nb(py_str, flags):
                             is_cmd = 1
                             if not flags['n_i']:
                                 new_import = True
-                                logging.printout(f'[WARN] %{cmd[0]} command detected')
+                                logging.printout(f'{is_warn} %{cmd[0]} {cmd_det_msg}')
 
                         if is_cmd:
                             if cmd[0] == "cd" and flags['c_m']:
@@ -284,21 +321,21 @@ def py2nb(py_str, flags):
                                         check_imports(os_import,flags,'ipy')
                                 else:
                                     if flags['c_m']:
-                                        new_cmd = f"{default_env_cmd[0]}    {default_env_cmd[1]}".replace(cc_trailing_comment,"")
-                                        new_cmd_spaces = f"{spaces}{default_env_cmd[0]}{spaces}{default_env_cmd[1]}"
+                                        new_cmd = f"for k, v in os.environ.items():\n    print(f'{{k}}={{v}}')\n"
+                                        new_cmd_spaces = f"{spaces}for k, v in os.environ.items():{cc_trailing_comment}\n{spaces}    print(f'{{k}}={{v}}'){cc_trailing_comment}\n"
                                         check_imports(os_import,flags,'ipy')
 
                             if flags['c_m']:
-                                logging.printout(f'[WARN] converted:\n    {strip_line}  to:\n    {new_cmd}')
+                                logging.printout(f'{is_warn} {converted_wrd}:\n    {strip_line}  {to_wrd}:\n    {new_cmd}')
                         else:
                             if not flags['n_c']:
-                                logging.printout(f'[WARN] unsupported command is detected!',)
-                                logging.printout(f'[WARN] commenting out unsupported command: {strip_line.rstrip()}')
+                                logging.printout(f'{is_warn} {un_command_det_msg}',)
+                                logging.printout(f'{is_off}  {comment_un_cmd_msg}: {strip_line.rstrip()}')
                                 is_unsupported = 1
                                 new_cmd_spaces = f"{spaces}{cc_auto_comment} {strip_line}"
                             else:
-                                logging.printout(f'[WARN] unsupported command is detected!')
-                                logging.printout(f'[WARN] not commenting out unsupported command: {strip_line.rstrip()}')
+                                logging.printout(f'{is_warn} {un_command_det_msg}')
+                                logging.printout(f'{is_off}  {comment_un_cmd_msg}: {strip_line.rstrip()}')
                                 new_cmd_spaces = f"{spaces}{strip_line}"
                         if flags['c_m']:   
                             chunk[x] = new_cmd_spaces
@@ -316,7 +353,7 @@ def py2nb(py_str, flags):
     }
 
     if globals()['new_import']:
-        logging.printout('[WARN] adding new imports to the top of the notebook')
+        logging.printout(f'{is_warn} {add_imports_cell_msg}')
         notebook['cells'].insert(0, {
                 'cell_type': 'code',
                 'metadata': new_imports_meta_ipy,
@@ -345,20 +382,19 @@ def convert(in_file, out_file, extra_flags):
             json.dump(notebook, f, indent=2)
 
     else:
-        raise(Exception('Extensions must be .ipynb and .py or vice versa'))
+        logging.critical(file_ext_msg)
+        sys.exit(1)
 
 
 def main():
     logger.setLevel(logging.INFO)
-    logging.info('---------------------------')
-    logging.info('----------[START]----------')
-    logging.info('---------------------------')
+    logging.info(log_start_msg)
     logger.addHandler(logging.StreamHandler(sys.stdout))
     argv = sys.argv[1:]
 
     if len(argv) == 0:
-        logging.error("please specify atleast one file to convert")
-        logging.error('Usage: colab-convert <input_file> <output_file> <extra_flags>')
+        logging.error(specify_file_msg)
+        logging.error(usage_msg)
         sys.exit(1)
     if len(argv) == 1:
         argv.append('out')
@@ -379,7 +415,7 @@ def main():
     elif in_file_ext == '.ipynb':
         in_is_ipynb = True
     else:
-        logging.error('Input file must be .ipynb or .py')
+        logging.error(f'{input_wrd.capitalize()} {file_ext_msg}')
         sys.exit(1)
     if argv[1] == 'out':
         if in_is_ipynb:
@@ -388,7 +424,7 @@ def main():
         if in_is_py:
             argv[1] += '.ipynb'
             out_file_ext = '.ipynb'
-        logging.warn(f'setting output file to {argv[1]}')
+        logging.warn(f'{set_output_ext_msg} {argv[1]}')
     #default flags
     if in_is_ipynb:
         convert_magic = True
@@ -399,11 +435,12 @@ def main():
         no_comment = True
         no_imports = True
     if out_file_ext != '.ipynb' and out_file_ext != '.py':
-        logging.error('Output file must be .ipynb or .py')
+        logging.error(f'{output_wrd.capitalize()} {file_ext_msg}')
         sys.exit(1)
     if extra_flags:
         test_flags = [element for element in extra_flags if element not in flags_list]
         if test_flags:
+            logging.info(help_called_msg)
             for key, value in flags_desc.items():
                 print(key, value)
             sys.exit(1)
@@ -414,19 +451,19 @@ def main():
             # then --convert-magic is negated for --retain-magic [-cm -rm = -rm]
             if '--retain-magic' in extra_flags or '-rm' in extra_flags:
                 if '--convert-magic' in extra_flags or '-cm' in extra_flags:
-                    logging.warn('[WARN] --retain-magic (-rm) takes presidence over --convert-magic (-cm)')
-                    logging.warn('[WARN] using --retain-magic (-rm)')
-                logging.info('[NOT]  converting magic commands!')
+                    logging.warn(f'{is_warn} {rm_over_cm_msg}')
+                    logging.warn(f'{is_warn} {rm_over_cm_fall_msg}')
+                logging.info(f'{is_off}  {convert_magic_msg}!')
                 convert_magic = False
             else:
-                logging.info('[OK]   converting magic commands')
+                logging.info(f'{is_on}   {convert_magic_msg}')
                 convert_magic = True
         #just an extra check to report if --convert-magic flag isnt present
         else:
             if convert_magic:
-                logging.info('[OK]   converting magic commands')
+                logging.info(f'{is_on}   {convert_magic_msg}')
             else:
-                logging.info('[NOT]  converting magic commands!')
+                logging.info(f'{is_off}  {convert_magic_msg}!')
 
         # check for --no-comment , --auto-comment
         if '--no-comment' in extra_flags or '-nc' in extra_flags or '--auto-comment' in extra_flags or '-ac' in extra_flags:
@@ -434,69 +471,67 @@ def main():
             # then --no-comment is negated for --auto-comment [-nc -ac = -ac]
             if '--auto-comment' in extra_flags or '-ac' in extra_flags:
                 if '--no-comment' in extra_flags or '-nc' in extra_flags:
-                    logging.warn('[WARN] --auto-comment (-ac) takes presidence over --no-comment (-nc)')
-                    logging.warn('[WARN] using --auto-comment (-ac)')
-                logging.info('[OK]   commenting out unsupported magic commands')
+                    logging.warn(f'{is_warn} {ac_over_nc_msg}')
+                    logging.warn(f'{is_warn} {ac_over_nc_fall_msg}')
+                logging.info(f'{is_on}   {un_comment_msg}')
                 no_comment = False
             else:
                 no_comment = True
-                logging.info('[NOT]  commenting out unsupported magic commands!')
+                logging.info(f'{is_off}  {un_comment_msg}!')
         #just an extra check to report if --no-comment flag isnt present
         else:
             if no_comment:
-                logging.info('[NOT]  commenting out unsupported magic commands!')
+                logging.info(f'{is_off}  {un_comment_msg}!')
             else:
-                logging.info('[OK]   commenting out unsupported magic commands')
+                logging.info(f'{is_on}   {un_comment_msg}')
 
         # check for --no-imports flag
         if '--no-imports' in extra_flags or '-ni' in extra_flags:
-            logging.info('[NOT]  keeping new imports made by cc')
+            logging.info(f'{is_off}  {imports_msg}')
             no_imports = True
         else:
             if not convert_magic:
                 if '--retain-magic' in extra_flags or '-rm' in extra_flags:
-                    logging.warn('[WARN] --retain-magic is detected, new imports will NOT be made')
+                    logging.warn(f'{is_warn} {ret_mag_det_msg}')
                 else:
-                    logging.warn('[WARN] default settings is retaining magic commands')
+                    logging.warn(f'{is_warn} {def_set_ret_mag_msg}')
                 no_imports = True
-                logging.info('[NOT]  keeping new imports made by cc')
+                logging.info(f'{is_off}  {imports_msg}!')
             else:
                 no_imports = False
-                logging.info('[OK]   keeping new imports made by cc')
+                logging.info(f'{is_on}   {imports_msg}')
 
         # check for --no-outputs flag
         if '--outputs' in extra_flags or '-o' in extra_flags:
-            logging.info('[OK]   showing outputs from cc')
+            logging.info(f'{is_on}   {outputs_msg}')
         else:
-            logging.info('[NOT]  showing outputs from cc!')
+            logging.info(f'{is_off}  {outputs_msg}!')
             logger.removeHandler(logger.handlers[-1])
 
     # set defaults per files if no flags are set
     else:
         if in_is_ipynb:
-            logging.info('[NOT]  showing outputs from cc')
-            logging.info('[OK]   converting magic commands')
-            logging.info('[OK]   commenting out unsupported magic commands')
-            logging.info('[OK]   keeping new imports made by cc')
-            logger.removeHandler(logger.handlers[-1])
-        if in_is_py:
-            logging.info('[NOT]  showing outputs from cc')
-            logging.info('[NOT]  converting magic commands!')
-            logging.info('[NOT]  commenting out unsupported magic commands!')
-            logging.info('[NOT]  keeping new imports made by cc')
-            logger.removeHandler(logger.handlers[-1])
+            logging.info(f'{is_on}   {convert_magic_msg}')
+            logging.info(f'{is_on}   {un_comment_msg}')
+            logging.info(f'{is_on}   {imports_msg}!')
+        else:
+            logging.info(f'{is_off}  {convert_magic_msg}!')
+            logging.info(f'{is_off}  {un_comment_msg}!')
+            logging.info(f'{is_off}  {imports_msg}!')
+        logger.removeHandler(logger.handlers[-1])
+        logging.info(f'{is_off}  {outputs_msg}!')
     
     flags = {'c_m': convert_magic, 'n_c': no_comment , 'n_i': no_imports}
 
-    print(f'\nconverting {argv[0]} to {argv[1]}')
+    print(f'\n{convert_wrd} {argv[0]} {to_wrd} {argv[1]}')
 
     start_time = time.perf_counter()
     convert(in_file=argv[0], out_file=argv[1], extra_flags=flags)
     end_time = time.perf_counter()
 
-    print('Finished!')
-    print(f'conversion took {round(end_time - start_time, 6)} seconds')
-    print(f'\nlog file created:\n{os.getcwd()}{os.sep}{log_file}')
+    print(f'{finished_wrd.capitalize()}!')
+    print(f'{convert_time_msg} {round(end_time - start_time, 6)} {seconds_wrd}')
+    print(f'\n{log_file_msg}:\n{os.getcwd()}{os.sep}{log_file}')
 
 if __name__ == '__main__':
     main()
