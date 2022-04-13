@@ -14,8 +14,8 @@ Atom/Hydrogen or VSCode/Python allows creating a python files split into cells w
 - comments out unsupported ipython magic
 - creates new import blocks for converted code
 - logs all changes to a log file for review
-- converted magic commands are prefixed with `#<cc-cm>`
-- commented magic commands are appended with `#<cc-ac>`
+- converted magic commands are appended with `#<cc-cm>`
+- commented magic commands are prefixed with `#<cc-ac>`
 
 
 ## Install & Basic Usage
