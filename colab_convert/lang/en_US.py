@@ -3,8 +3,9 @@
 ############################
 
 # you can use this as template to create new language support for the project!
-# plase do not change the varible names or command flag names like --help/-h --retain-magic/-rm ect.
-# only edit the message after the equal sign and also do not change the command flag names
+
+# words not to edit are "colab-convert" "ipynb" "py"
+# only edit the message after the equal sign
 
 #############
 ## English ##
@@ -15,17 +16,17 @@
 help_main_1_msg = 'all flags are optional and have set defaults for best results'
 help_main_2_msg = 'use flags to enable or disable certain functions on/off by default'
 lang_detected_msg = 'Detected as a supported Language'
-outputs_msg = 'showing outputs from cc'
+outputs_msg = 'showing outputs from converter'
 convert_magic_msg = 'convert magic commands'
 un_comment_msg = 'commenting out unsupported magic commands'
-imports_msg = 'keeping new imports made by cc'
+imports_msg = 'keeping new imports made by converter'
 add_imports_cell_msg = 'adding new imports to the top of the file'
 help_called_msg = 'help message called'
 file_ext_msg = 'file must be .ipynb or .py'
 set_output_ext_msg = 'setting output file to'
 specify_file_msg = 'please specify atleast one file to convert'
-usage_msg = 'Usage: colab-convert <input_file> <output_file> <extra_flags>'
-un_command_det_msg = 'unsupported command is detected!'
+usage_msg = 'Usage: colab-convert <input file> <output file> <extra flags>'
+un_command_det_msg = 'unsupported command is detected'
 comment_un_cmd_msg = 'commenting out unsupported command'
 def_set_ret_mag_msg = 'default settings is retaining magic commands'
 ret_mag_det_msg = 'is detected, new imports will NOT be made'
@@ -38,7 +39,7 @@ rm_over_cm_fall_msg = 'using'
 cmd_det_msg = 'command detected'
 in_file_msg = 'input file'
 in_file_convert_msg = 'input file to convert'
-out_file_msg = 'output_file'
+out_file_msg = 'output file'
 out_file_convert_msg = 'output file to write to'
 flags_help_msg = 'extra flags to pass to the converter'
 help_flag_msg = 'Show this help message'

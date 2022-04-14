@@ -2,66 +2,80 @@
 ## Multi Language Support ##
 ############################
 
-# Du kannst dies als Vorlage verwenden, um neue Sprachunterstützung für das Projekt zu erstellen!
-# Ändere bitte nicht die Namen der Variablen oder die Namen der Befehle wie --help/-h --retain-magic/-rm etc.
-# Bearbeite nur die Nachricht nach dem Gleichheitszeichen und ändere auch nicht die "command flag names".
+# you can use this as template to create new language support for the project!
 
-##############
-##  German  ##
-##   de_DE  ##
-##############
+# words not to edit are "colab-convert" "ipynb" "py"
+# only edit the message after the equal sign
 
-# Standardmeldungen
-is_warn = '[Warnung]'
-is_on = '[An]'
-is_off = '[Aus]'
-lang_detected_msg = 'Wird als unterstützte Sprache erkannt'
-outputs_msg = 'Ausgaben von cc anzeigen'
-convert_magic_msg = 'Magische Befehle umwandeln'
-un_comment_msg = 'Auskommentieren von nicht unterstützten magischen Befehlen'
-imports_msg = 'Neue importierungen von cc beibehalten'
-add_imports_cell_msg = 'Hinzufügen neuer Importe an den Anfang der Datei'
-help_called_msg = 'Hilfemeldung aufgerufen'
-file_ext_msg = 'Datei muss .ipynb oder .py sein'
-set_output_ext_msg = 'Einstellung der Ausgabedatei auf'
-specify_file_msg = 'Bitte mindestens eine zu konvertierende Datei angeben'
-usage_msg = 'Benutzung: colab-convert <input_file> <output_file> <extra_flags>'
-un_command_det_msg = 'Nicht unterstützter Befehl entdeckt!'
-comment_un_cmd_msg = 'Nicht unterstützter Befehl wird auskommentiert'
-def_set_ret_mag_msg = 'Standardeinstellungen behalten magische Befehle bei'
-ret_mag_det_msg = '--retain-magic wurde entdeckt, es werden KEINE neuen Importierungen gemacht'
-convert_time_msg = 'Umstellung dauerte'
-log_file_msg = 'Protokolldatei wurde erstellt'
-ac_over_nc_msg = '--auto-comment (-ac) ersetzt --no-comment (-nc)'
-ac_over_nc_fall_msg = 'Nutzt --auto-comment (-ac)'
-rm_over_cm_msg = '--retain-magic (-rm) ersetzt --convert-magic (-cm)'
-rm_over_cm_fall_msg = 'Nutzt --retain-magic (-rm)'
-cmd_det_msg = 'Befehl erkannt'
+###############
+##  Deutsch  ##
+##   de_DE   ##
+###############
 
-# Standardwörter
-convert_wrd = 'Konvertieren'
-converted_wrd = f'{convert_wrd}ed'
-finished_wrd = 'Fertig'
-to_wrd = 'zu'
-seconds_wrd = 'Sekunden'
-input_wrd = 'Eingabe'
-output_wrd = 'Ausgabe'
+# default messages
+help_main_1_msg = 'all flags are optional and have set defaults for best results'
+help_main_2_msg = 'use flags to enable or disable certain functions on/off by default'
+lang_detected_msg = 'Detected as a supported Language'
+outputs_msg = 'showing outputs from converter'
+convert_magic_msg = 'convert magic commands'
+un_comment_msg = 'commenting out unsupported magic commands'
+imports_msg = 'keeping new imports made by converter'
+add_imports_cell_msg = 'adding new imports to the top of the file'
+help_called_msg = 'help message called'
+file_ext_msg = 'file must be .ipynb or .py'
+set_output_ext_msg = 'setting output file to'
+specify_file_msg = 'please specify atleast one file to convert'
+usage_msg = 'Usage: colab-convert <input file> <output file> <extra flags>'
+un_command_det_msg = 'unsupported command is detected'
+comment_un_cmd_msg = 'commenting out unsupported command'
+def_set_ret_mag_msg = 'default settings is retaining magic commands'
+ret_mag_det_msg = 'is detected, new imports will NOT be made'
+convert_time_msg = 'conversion took'
+log_file_msg = 'log file created'
+ac_over_nc_msg = 'takes presidence over'
+ac_over_nc_fall_msg = 'using'
+rm_over_cm_msg = 'takes presidence over'
+rm_over_cm_fall_msg = 'using'
+cmd_det_msg = 'command detected'
+in_file_msg = 'input file'
+in_file_convert_msg = 'input file to convert'
+out_file_msg = 'output file'
+out_file_convert_msg = 'output file to write to'
+flags_help_msg = 'extra flags to pass to the converter'
+help_flag_msg = 'Show this help message'
+def_flag_msg = 'Default Flags Set'
+def_flag_tip_msg = 'defaults are determined by input file'
+convert_msg = 'convert magic'
+auto_comment_msg = 'auto comment'
+avl_flags_msg = 'Available Flags'
+avl_flags_tip_msg = 'toggle certain items on or off'
+rm_info_msg = 'Keep magic commands in the output'
+cm_info_msg = 'Convert magic commands to python code'
+ac_info_msg = 'Convert unsupported magic commands to comments'
+nc_info_msg = 'Keep unsupported magic commands'
+ni_info_msg = 'Do not add imports from converted magic commands'
+out_info_msg = 'Outputs to console of conversions and commented lines'
 
-# Standardoptionen
-flags_desc = {
-    'Colab-Convert': '\nall Flags sind optional und haben Standardwerte für beste Ergebnisse \n Benutze flags um bestimmte Funktionen standardmäßig ein- oder auszuschalten \n',
-    'Usage:': 'colab-convert <input_file> <output_file> <flags>',
-    'Example:': 'colab-convert in.ipynb out.py -nc -rm -o\n',
-    '<input_file>:': 'Eingabedatei zum Konvertieren',
-    '<output_file>:': 'Ausgabedatei zum Schreiben in',
-    '<flags>:': '"extra flags" zur Übergabe an den Konverter\n',
-    '--help': '(-h)\n  Diese Hilfemeldung anzeigen\n',
-    'Default Flags Set (Standardwerte werden durch die Eingabedatei bestimmt)': '\n  ipynb input file:\n    [YES] Magie umwandeln , [YES] Auto-Kommentar , [YES] Importe , [NO] Ausgaben\n  py input file:\n    [NO] Magie umwandeln , [NO] Auto-Kommentar , [NO] Importe , [NO] Ausgaben\n',
-    'Available Flags': '\n  toggle certain items on or off\n',
-    '  --retain-magic': ' (-rm)  : Magische Befehle in der Ausgabe behalten\n      .py default    [ON]\n      .ipynb default [OFF]',
-    '  --convert-magic': ' (-cm) : Magische Befehle in Python Code umwandeln\n      .py default    [OFF]\n      .ipynb default [ON]',
-    '  --auto-comment': ' (-ac)  : Nicht unterstützte magische Befehle in Kommentare umwandeln\n      .py default    [OFF]\n      .ipynb default [ON]',
-    '  --no-comment': ' (-nc)    : Nicht unterstützte magische Befehle beibehalten\n      .py default    [ON]\n      .ipynb default [OFF]',
-    '  --no-imports': ' (-ni)    : Keine Importe aus konvertierten magischen Befehlen hinzufügen\n      .py default    [OFF]\n      .ipynb default [OFF]',
-    '  --outputs': ' (-o)        : Ausgaben auf der Konsole von Konvertierungen und kommentierten Zeilen.\n      .py default    [OFF]\n      .ipynb default [OFF]',
-}
+# default words
+convert_wrd = 'convert'
+converted_wrd = 'converted'
+finished_wrd = 'finished'
+default_wrd = 'default'
+to_wrd = 'to'
+flags_wrd = 'flags'
+usage_wrd = 'usage'
+example_wrd = 'example'
+seconds_wrd = 'seconds'
+input_wrd = 'input'
+output_wrd = 'output'
+outputs_wrd = 'outputs'
+imports_wrd = 'imports'
+warn_wrd = 'WARN'
+ok_wrd = 'OK'
+not_wrd = 'NOT'
+off_wrd = 'OFF'
+on_wrd = 'ON'
+yes_wrd = 'YES'
+no_wrd = 'NO'
+in_wrd = 'in'
+out_wrd = 'out'

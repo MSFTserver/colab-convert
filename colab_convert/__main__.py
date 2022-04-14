@@ -415,7 +415,7 @@ def main():
     elif in_file_ext == '.ipynb':
         in_is_ipynb = True
     else:
-        logging.error(f'{input_wrd.capitalize()} {file_ext_msg}')
+        logging.error(f'{input_wrd} {file_ext_msg}')
         sys.exit(1)
     if argv[1] == 'out':
         if in_is_ipynb:
@@ -435,7 +435,7 @@ def main():
         no_comment = True
         no_imports = True
     if out_file_ext != '.ipynb' and out_file_ext != '.py':
-        logging.error(f'{output_wrd.capitalize()} {file_ext_msg}')
+        logging.error(f'{output_wrd} {file_ext_msg}')
         sys.exit(1)
     if extra_flags:
         test_flags = [element for element in extra_flags if element not in flags_list]
@@ -453,7 +453,7 @@ def main():
                 if '--convert-magic' in extra_flags or '-cm' in extra_flags:
                     logging.warn(f'[{warn_wrd}] --retain-magic (-rm) {rm_over_cm_msg} --convert-magic (-cm)')
                     logging.warn(f'[{warn_wrd}] {rm_over_cm_fall_msg} --retain-magic (-rm)')
-                logging.info(f'[{not_wrd}]  {convert_magic_msg}!')
+                logging.info(f'[{not_wrd}]  {convert_magic_msg}')
                 convert_magic = False
             else:
                 logging.info(f'[{ok_wrd}]   {convert_magic_msg}')
@@ -463,7 +463,7 @@ def main():
             if convert_magic:
                 logging.info(f'[{ok_wrd}]   {convert_magic_msg}')
             else:
-                logging.info(f'[{not_wrd}]  {convert_magic_msg}!')
+                logging.info(f'[{not_wrd}]  {convert_magic_msg}')
 
         # check for --no-comment , --auto-comment
         if '--no-comment' in extra_flags or '-nc' in extra_flags or '--auto-comment' in extra_flags or '-ac' in extra_flags:
@@ -477,11 +477,11 @@ def main():
                 no_comment = False
             else:
                 no_comment = True
-                logging.info(f'[{not_wrd}]  {un_comment_msg}!')
+                logging.info(f'[{not_wrd}]  {un_comment_msg}')
         #just an extra check to report if --no-comment flag isnt present
         else:
             if no_comment:
-                logging.info(f'[{not_wrd}]  {un_comment_msg}!')
+                logging.info(f'[{not_wrd}]  {un_comment_msg}')
             else:
                 logging.info(f'[{ok_wrd}]   {un_comment_msg}')
 
@@ -496,7 +496,7 @@ def main():
                 else:
                     logging.warn(f'[{warn_wrd}] {def_set_ret_mag_msg}')
                 no_imports = True
-                logging.info(f'[{not_wrd}]  {imports_msg}!')
+                logging.info(f'[{not_wrd}]  {imports_msg}')
             else:
                 no_imports = False
                 logging.info(f'[{ok_wrd}]   {imports_msg}')
@@ -505,7 +505,7 @@ def main():
         if '--outputs' in extra_flags or '-o' in extra_flags:
             logging.info(f'[{ok_wrd}]   {outputs_msg}')
         else:
-            logging.info(f'[{not_wrd}]  {outputs_msg}!')
+            logging.info(f'[{not_wrd}]  {outputs_msg}')
             logger.removeHandler(logger.handlers[-1])
 
     # set defaults per files if no flags are set
@@ -513,12 +513,12 @@ def main():
         if in_is_ipynb:
             logging.info(f'[{ok_wrd}]   {convert_magic_msg}')
             logging.info(f'[{ok_wrd}]   {un_comment_msg}')
-            logging.info(f'[{ok_wrd}]   {imports_msg}!')
+            logging.info(f'[{ok_wrd}]   {imports_msg}')
         else:
-            logging.info(f'[{not_wrd}]  {convert_magic_msg}!')
-            logging.info(f'[{not_wrd}]  {un_comment_msg}!')
-            logging.info(f'[{not_wrd}]  {imports_msg}!')
-        logging.info(f'[{not_wrd}]  {outputs_msg}!')
+            logging.info(f'[{not_wrd}]  {convert_magic_msg}')
+            logging.info(f'[{not_wrd}]  {un_comment_msg}')
+            logging.info(f'[{not_wrd}]  {imports_msg}')
+        logging.info(f'[{not_wrd}]  {outputs_msg}')
         logger.removeHandler(logger.handlers[-1])
     
     flags = {'c_m': convert_magic, 'n_c': no_comment , 'n_i': no_imports}
@@ -529,7 +529,7 @@ def main():
     convert(in_file=argv[0], out_file=argv[1], extra_flags=flags)
     end_time = time.perf_counter()
 
-    print(f'{finished_wrd.capitalize()}!')
+    print(f'{finished_wrd}')
     print(f'{convert_time_msg} {round(end_time - start_time, 6)} {seconds_wrd}')
     print(f'\n{log_file_msg}:\n{os.getcwd()}{os.sep}{log_file}')
 
