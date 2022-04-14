@@ -8,7 +8,7 @@
 
 ##############
 ##  Arabic  ##
-##  ar_EG   ##
+##  ar_DZ   ##
 ##############
 
 # default messages
@@ -16,36 +16,36 @@ is_warn = '[تحذير]'
 is_on = '[تعم]'
 is_off = '[لا]'
 lang_detected_msg = 'تم الاكتشاف كلغة مدعومة '
-outputs_msg = 'اضهار النتائج من ال سي سي'
+outputs_msg = 'اضهار النتائج من cc'
 convert_magic_msg = 'تحويل الاوامر السحرية '
 un_comment_msg = 'التعليق على الأوامر السحرية غير المدعومة'
-imports_msg = 'حفظ الواردات الجديدة التي صنعت ب ال سي سي'
+imports_msg = 'حفظ الواردات الجديدة التي صنعت ب cc'
 add_imports_cell_msg = 'إضافة عمليات استيراد جديدة إلى أعلى الملف'
 help_called_msg = 'تم استخدام المساعدات '
 file_ext_msg = 'الملف يجب ان يكون بصيغة .ipynb او .py'
 set_output_ext_msg = 'حفظ الملف في'
 specify_file_msg = 'حدد على الاقل ملف واحد '
-usage_msg = 'الاستعمال: colab-convert <اختر الملف> <مكان الحفاظ > <extra_flags>'
+usage_msg = 'استعمال: colab-convert <input_file> <output_file> <extra_flags>'
 un_command_det_msg = 'الامر غير مدعوم!'
 comment_un_cmd_msg = 'التعليق خارج أمر غير مدعوم'
 def_set_ret_mag_msg = 'الإعدادات الافتراضية هي الاحتفاظ بالأوامر السحرية'
-ret_mag_det_msg = 'تم اكتشاف الاحتفاظ بالسحر, لن يتم حفظ التغييرات'
+ret_mag_det_msg = '--retain-تم اكتشاف السحر, الملفات الجديدة لن تكون '
 convert_time_msg = 'سيستغذق التحويل'
 log_file_msg = 'تم انشاء السجل'
-ac_over_nc_msg = '- تعليق تلقائي (-ac) يتولى الرئاسة - بدون تعليق (-NC)'
-ac_over_nc_fall_msg = 'باستخدام - تعليق تلقائي (-ac)'
-rm_over_cm_msg = '- السحر الإحتياطي (-rm) يتولى الرئاسة - تحويل السحر (-سم)'
-rm_over_cm_fall_msg = 'باستخدام - الاحتفاظ بالسحر (-rm)'
+ac_over_nc_msg = '--auto-comment (-ac) يتولى الرئاسة على  --no-comment (-nc)'
+ac_over_nc_fall_msg = 'استعمال --auto-comment (-ac)'
+rm_over_cm_msg = '--retain-magic (-rm) يتولى الرئاسة على --convert-magic (-cm)'
+rm_over_cm_fall_msg = 'استعمال --retain-magic (-rm)'
 cmd_det_msg = 'تم اكتشاف الامر'
 
 # default words
-convert_wrd = 'convert'
-converted_wrd = f'{convert_wrd}ed'
-finished_wrd = 'finished'
-to_wrd = 'to'
-seconds_wrd = 'seconds'
-input_wrd = 'input'
-output_wrd = 'output'
+convert_wrd = 'تحويل'
+converted_wrd = 'تم التحويل'
+finished_wrd = 'اكتمل'
+to_wrd = ' الى'
+seconds_wrd = 'ثانيا'
+input_wrd = 'إدخال'
+output_wrd = 'اخراج'
 
 # default options
 flags_desc = {
