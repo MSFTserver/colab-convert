@@ -55,7 +55,7 @@ logger= logging.getLogger()
 handler = logging.FileHandler(log_file, 'a', 'utf-8')
 handler.setFormatter(logging.Formatter('%(asctime)s : %(message)s'))
 logger.addHandler(handler)
-log_start_msg = '\n---------------------------\n----------[START]----------\n---------------------------'
+log_start_msg = f'\n---------------------------\n----------[{start_wrd}]----------\n---------------------------'
 
 # default conversion code
 header_comment = '# %%\n'
