@@ -55,6 +55,10 @@ ac_info_msg = 'Convert unsupported magic commands to comments'
 nc_info_msg = 'Keep unsupported magic commands'
 ni_info_msg = 'Do not add imports from converted magic commands'
 out_info_msg = 'Outputs to console of conversions and commented lines'
+no_lang_msg = 'No Language Detected in command'
+lang_info_msg = 'Language to change output messages to'
+lang_not_supported_msg = 'Language not supported'
+lang_supported_msg = 'Language supported'
 
 # default words
 convert_wrd = 'convert'
