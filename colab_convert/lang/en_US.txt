@@ -1,0 +1,88 @@
+////////////////////////////
+// Multi Language Support //
+////////////////////////////
+
+// you can use this as template to create new language support for the project!
+
+// words not to edit are "colab-convert" "ipynb" "py"
+// only edit the message after the equal sign
+
+/////////////
+// English //
+//  en_US  //
+/////////////
+
+{
+// default messages
+'defmsg_help_main_1_msg': 'all flags are optional and have set defaults for best results',
+'defmsg_help_main_2_msg': 'use flags to enable or disable certain functions on/off by default',
+'defmsg_lang_detected_msg': 'Detected as a supported Language',
+'defmsg_outputs_msg': 'showing outputs from converter',
+'defmsg_convert_magic_msg': 'convert magic commands',
+'defmsg_un_comment_msg': 'commenting out unsupported magic commands',
+'defmsg_imports_msg': 'keeping new imports made by converter',
+'defmsg_add_imports_cell_msg': 'adding new imports to the top of the file',
+'defmsg_help_called_msg': 'help message called',
+'defmsg_file_ext_msg': 'file must be .ipynb or .py',
+'defmsg_set_output_ext_msg': 'setting output file to',
+'defmsg_specify_file_msg': 'please specify atleast one file to convert',
+'defmsg_usage_msg': 'Usage: colab-convert <input file> <output file> <extra flags>',
+'defmsg_un_command_det_msg': 'unsupported command is detected',
+'defmsg_comment_un_cmd_msg': 'commenting out unsupported command',
+'defmsg_def_set_ret_mag_msg': 'default settings is retaining magic commands',
+'defmsg_ret_mag_det_msg': 'is detected, new imports will NOT be made',
+'defmsg_convert_time_msg': 'conversion took',
+'defmsg_log_file_msg': 'log file created',
+'defmsg_ac_over_nc_msg': 'takes precedence over',
+'defmsg_ac_over_nc_fall_msg': 'using',
+'defmsg_rm_over_cm_msg': 'takes precedence over',
+'defmsg_rm_over_cm_fall_msg': 'using',
+'defmsg_cmd_det_msg': 'command detected',
+'defmsg_in_file_msg': 'input file',
+'defmsg_in_file_convert_msg': 'input file to convert',
+'defmsg_out_file_msg': 'output file',
+'defmsg_out_file_convert_msg': 'output file to write to',
+'defmsg_flags_help_msg': 'extra flags to pass to the converter',
+'defmsg_help_flag_msg': 'Show this help message',
+'defmsg_def_flag_msg': 'Default Flags Set',
+'defmsg_def_flag_tip_msg': 'defaults are determined by input file',
+'defmsg_convert_msg': 'convert magic',
+'defmsg_auto_comment_msg': 'auto comment',
+'defmsg_avl_flags_msg': 'Available Flags',
+'defmsg_avl_flags_tip_msg': 'toggle certain items on or off',
+'defmsg_rm_info_msg': 'Keep magic commands in the output',
+'defmsg_cm_info_msg': 'Convert magic commands to python code',
+'defmsg_ac_info_msg': 'Convert unsupported magic commands to comments',
+'defmsg_nc_info_msg': 'Keep unsupported magic commands',
+'defmsg_ni_info_msg': 'Do not add imports from converted magic commands',
+'defmsg_out_info_msg': 'Outputs to console of conversions and commented lines',
+'defmsg_no_lang_msg': 'No Language Detected in command',
+'defmsg_lang_info_msg': 'Language to change output messages to',
+'defmsg_lang_not_supported_msg': 'Language not supported',
+'defmsg_lang_supported_msg': 'Language supported',
+
+// default words
+'defwrd_convert_wrd': 'convert',
+'defwrd_converted_wrd': 'converted',
+'defwrd_finished_wrd': 'finished',
+'defwrd_default_wrd': 'default',
+'defwrd_to_wrd': 'to',
+'defwrd_flags_wrd': 'flags',
+'defwrd_usage_wrd': 'usage',
+'defwrd_example_wrd': 'example',
+'defwrd_seconds_wrd': 'seconds',
+'defwrd_input_wrd': 'input',
+'defwrd_output_wrd': 'output',
+'defwrd_outputs_wrd': 'outputs',
+'defwrd_imports_wrd': 'imports',
+'defwrd_start_wrd': 'START',
+'defwrd_warn_wrd': 'WARN',
+'defwrd_ok_wrd': 'OK',
+'defwrd_not_wrd': 'NOT',
+'defwrd_off_wrd': 'OFF',
+'defwrd_on_wrd': 'ON',
+'defwrd_yes_wrd': 'YES',
+'defwrd_no_wrd': 'NO',
+'defwrd_in_wrd': 'in',
+'defwrd_out_wrd': 'out',
+}

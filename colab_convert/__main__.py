@@ -1,5 +1,5 @@
-import json, sys, time, os, logging, locale
-
+import sys, time, os, logging, locale
+import json5 as json
 # use of RFC 1766 to get language code
 sup_lang = {
     'en': ['en_US', 'en'], # English
@@ -16,22 +16,36 @@ for i in sup_lang:
 user_language = locale.getdefaultlocale()[0]
 if user_language in supported_languages:
     if user_language in sup_lang['en']:
-        from .lang.en_US import *
+        with open(f"{os.path.dirname(__file__)}/lang/en_US.txt") as f:
+            data = f.read()
+        translation = json.loads(data)
     elif user_language in sup_lang['de']:
-        from .lang.de_DE import *
+        with open(f"{os.path.dirname(__file__)}/lang/de_DE.txt") as f:
+            data = f.read()
+        translation = json.loads(data)
     elif user_language in sup_lang['fr']:
-        from .lang.fr_FR import *
+        with open(f"{os.path.dirname(__file__)}/lang/fr_FR.txt") as f:
+            data = f.read()
+        translation = json.loads(data)
     elif user_language in sup_lang['es']:
-        from .lang.es_ES import *
+        with open(f"{os.path.dirname(__file__)}/lang/es_ES.txt") as f:
+            data = f.read()
+        translation = json.loads(data)
     elif user_language in sup_lang['ar']:
-        from .lang.ar_EG import *
+        with open(f"{os.path.dirname(__file__)}/lang/ar_AR.txt") as f:
+            data = f.read()
+        translation = json.loads(data)
     # extra fallback
     else:
-        from .lang.en_US import *
-    print(f'[{ok_wrd}]   {user_language} {lang_detected_msg}')
+        with open(f"{os.path.dirname(__file__)}/lang/en_US.txt") as f:
+            data = f.read()
+        translation = json.loads(data)
+    print(f"[{translation['defwrd_ok_wrd']}]   {user_language} {translation['defmsg_lang_detected_msg']}")
 else:
-    print(f'[WARN]  {user_language} not supported. defaulting to English')
-    from .lang.en_US import *
+    print(f"[WARN]  {user_language} not supported. defaulting to English")
+    with open(f"{os.path.dirname(__file__)}/lang/en_US.txt") as f:
+        data = f.read()
+        translation = json.loads(data)
 
 # set up logging, adds new logger mode and level
 log_file = 'cc-outputs.log'
@@ -55,7 +69,7 @@ logger= logging.getLogger()
 handler = logging.FileHandler(log_file, 'a', 'utf-8')
 handler.setFormatter(logging.Formatter('%(asctime)s : %(message)s'))
 logger.addHandler(handler)
-log_start_msg = f'\n---------------------------\n----------[{start_wrd}]----------\n---------------------------'
+log_start = f"\n---------------------------\n----------[{translation['defwrd_start_wrd']}]----------\n---------------------------"
 
 # default conversion code
 header_comment = '# %%\n'
@@ -74,27 +88,28 @@ sp_added = False
 
 # default options
 flags_desc = {
-    'Colab-Convert': f'\n{help_main_1_msg}\n{help_main_2_msg}n',
-    f'{usage_wrd}:': f'colab-convert <{in_file_msg}> <{out_file_msg}> <{flags_wrd}>',
-    f'{example_wrd}:': f'colab-convert {in_wrd}.ipynb {out_wrd}.py -nc -rm -o\n',
-    f'<{in_file_msg}>:': f'{in_file_convert_msg}',
-    f'<{out_file_msg}>:': f'{out_file_convert_msg}',
-    f'<{flags_wrd}>:': f'{flags_help_msg}\n',
-    f'--help': f'(-h)\n  {help_flag_msg}\n',
-    f'{def_flag_msg} ({def_flag_tip_msg})': f'\n  ipynb {in_file_msg}:\n    [{yes_wrd}] {convert_msg} , [{yes_wrd}] {auto_comment_msg} , [{yes_wrd}] {imports_wrd} , [{no_wrd}] {outputs_wrd}\n  py {in_file_msg}:\n    [{no_wrd}] {convert_msg} , [{no_wrd}] {auto_comment_msg} , [{no_wrd}] {imports_wrd} , [{no_wrd}] {outputs_wrd}\n',
-    f'{avl_flags_msg}': f'\n  {avl_flags_tip_msg}\n',
-    f'  --retain-magic': f' (-rm)  : {rm_info_msg}\n      .py {default_wrd}    [{on_wrd}]\n      .ipynb {default_wrd} [{off_wrd}]',
-    f'  --convert-magic': f' (-cm) : {cm_info_msg}\n      .py {default_wrd}    [{off_wrd}]\n      .ipynb {default_wrd} [{on_wrd}]',
-    f'  --auto-comment': f' (-ac)  : {ac_info_msg}\n      .py {default_wrd}    [{off_wrd}]\n      .ipynb {default_wrd} [{on_wrd}]',
-    f'  --no-comment': f' (-nc)    : {nc_info_msg}\n      .py {default_wrd}    [{on_wrd}]\n      .ipynb {default_wrd} [{off_wrd}]',
-    f'  --no-imports': f' (-ni)    : {ni_info_msg}\n      .py {default_wrd}    [{off_wrd}]\n      .ipynb {default_wrd} [{off_wrd}]',
-    f'  --outputs': f' (-o)        : {out_info_msg}\n      .py {default_wrd}    [{off_wrd}]\n      .ipynb {default_wrd} [{off_wrd}]',
+    'Colab-Convert': f"\n{translation['defmsg_help_main_1_msg']}\n{translation['defmsg_help_main_2_msg']}n",
+    f"{translation['defwrd_usage_wrd']}:": f"colab-convert <{translation['defmsg_in_file_msg']}> <{translation['defmsg_out_file_msg']}> <{translation['defwrd_flags_wrd']}>",
+    f"{translation['defwrd_example_wrd']}:": f"colab-convert {translation['defwrd_in_wrd']}.ipynb {translation['defwrd_out_wrd']}.py -nc -rm -o\n",
+    f"<{translation['defmsg_in_file_msg']}>:": f"{translation['defmsg_in_file_convert_msg']}",
+    f"<{translation['defmsg_out_file_msg']}>:": f"{translation['defmsg_out_file_convert_msg']}",
+    f"<{translation['defwrd_flags_wrd']}>:": f"{translation['defmsg_flags_help_msg']}\n",
+    f"--help": f"(-h)\n  {translation['defmsg_help_flag_msg']}\n",
+    f"{translation['defmsg_def_flag_msg']} ({translation['defmsg_def_flag_tip_msg']})": f"\n  ipynb {translation['defmsg_in_file_msg']}:\n    [{translation['defwrd_yes_wrd']}] {translation['defmsg_convert_msg']} , [{translation['defwrd_yes_wrd']}] {translation['defmsg_auto_comment_msg']} , [{translation['defwrd_yes_wrd']}] {translation['defwrd_imports_wrd']} , [{translation['defwrd_no_wrd']}] {translation['defwrd_outputs_wrd']}\n  py {translation['defmsg_in_file_msg']}:\n    [{translation['defwrd_no_wrd']}] {translation['defmsg_convert_msg']} , [{translation['defwrd_no_wrd']}] {translation['defmsg_auto_comment_msg']} , [{translation['defwrd_no_wrd']}] {translation['defwrd_imports_wrd']} , [{translation['defwrd_no_wrd']}] {translation['defwrd_outputs_wrd']}\n",
+    f"{translation['defmsg_avl_flags_msg']}": f"\n  {translation['defmsg_avl_flags_tip_msg']}\n",
+    f"  --retain-magic": f" (-rm)  : {translation['defmsg_rm_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_on_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
+    f"  --convert-magic": f" (-cm) : {translation['defmsg_cm_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_on_wrd']}]",
+    f"  --auto-comment": f" (-ac)  : {translation['defmsg_ac_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_on_wrd']}]",
+    f"  --no-comment": f" (-nc)    : {translation['defmsg_nc_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_on_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
+    f"  --no-imports": f" (-ni)    : {translation['defmsg_ni_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
+    f"  --outputsv": f" (-o)        : {translation['defmsg_out_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
+    f"  --lang=": f" (-l=)         : {translation['defmsg_lang_info_msg']}\n       {translation['defwrd_default_wrd']} [English]\n      --lang=en_US"
 }
 
 # default options
 magic_list = ["cd","env","set_env"]
 help_flags = ['--help', '-h', '?']
-flags_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm','--no-imports', '-ni', '--outputs', '-o']
+flags_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm','--no-imports', '-ni', '--outputs', '-o', '--lang=' , '-l=']
 
 def check_imports(add_import,flags,f_type):
     strip_import = add_import.replace('import ','').replace('\n','')
@@ -124,7 +139,7 @@ def nb2py(notebook, flags):
         elif key == '}':
             reformat_main_metadata+="# !! "+key+"}\n"
         else:
-            reformat_main_metadata+=f'# !! {key}\n'
+            reformat_main_metadata+=f"# !! {key}\n"
     for cell in cells:
         cell_type = cell['cell_type']
         metadata = cell['metadata']
@@ -136,7 +151,7 @@ def nb2py(notebook, flags):
             elif key == '}':
                 reformat_metadata+="# !! "+key+"}\n"
             else:
-                reformat_metadata+=f'# !! {key}\n'
+                reformat_metadata+=f"# !! {key}\n"
     
         if cell_type == 'markdown':
             result.append('%s"""\n%s\n"""'%
@@ -157,12 +172,12 @@ def nb2py(notebook, flags):
                 # if magic command includes a '!' bang use subprocess to call the command
                 if strip_line.startswith('!') and flags['c_m']:
                     cmd = strip_line[:-1].replace("!","",1).split(" ")
-                    logging.printout(f'[{warn_wrd}] !{cmd[0]} {cmd_det_msg}')
+                    logging.printout(f"[{translation['defwrd_warn_wrd']}] !{cmd[0]} {translation['defmsg_cmd_det_msg']}")
                     new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                     new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(sub_p_res){cc_trailing_comment}\n"
                     source[x] = new_cmd_spaces
                     check_imports(sp_import,flags,'py')
-                    logging.printout(f'[{warn_wrd}] {converted_wrd}:\n    {strip_line}  {to_wrd}:\n{new_cmd}')
+                    logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defwrd_converted_wrd']}:\n    {strip_line}  {translation['defwrd_to_wrd']}:\n{new_cmd}")
 
                 # if magic command includes a '%' percent convert to python code
                 elif strip_line.startswith('%'):
@@ -175,7 +190,7 @@ def nb2py(notebook, flags):
                         is_cmd = 1
                         if not flags['n_i']:
                             new_import = True
-                            logging.printout(f'[{warn_wrd}] %{cmd[0]} {cmd_det_msg}')
+                            logging.printout(f"[{translation['defwrd_warn_wrd']}] %{cmd[0]} {translation['defmsg_cmd_det_msg']}")
                         
                     # if is command, add the new command to the source  
                     if is_cmd:
@@ -206,16 +221,16 @@ def nb2py(notebook, flags):
                                     check_imports(os_import,flags,'py')
 
                         if flags['c_m']:
-                            logging.printout(f'[{warn_wrd}] {converted_wrd}:\n    {strip_line}  {to_wrd}:\n    {new_cmd}')
+                            logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defwrd_converted_wrd']}:\n    {strip_line}  {translation['defwrd_to_wrd']}:\n    {new_cmd}")
                     else:
                         if not flags['n_c']:
-                            logging.printout(f'[{warn_wrd}] {un_command_det_msg}')
-                            logging.printout(f'[{not_wrd}]  {comment_un_cmd_msg}: {strip_line.rstrip()}')
+                            logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_un_command_det_msg']}")
+                            logging.printout(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_comment_un_cmd_msg']}: {strip_line.rstrip()}")
                             is_unsupported = 1
                             new_cmd_spaces = f"{spaces}{cc_auto_comment} {strip_line}"
                         else:
-                            logging.printout(f'[{warn_wrd}] {un_command_det_msg}')
-                            logging.printout(f'[{not_wrd}]  {comment_un_cmd_msg}: {strip_line.rstrip()}')
+                            logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_un_command_det_msg']}")
+                            logging.printout(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_comment_un_cmd_msg']}: {strip_line.rstrip()}")
                             new_cmd_spaces = f"{spaces}{strip_line}"
                     if flags['c_m']:   
                         source[x] = new_cmd_spaces
@@ -225,11 +240,11 @@ def nb2py(notebook, flags):
             result.append("%s%s" % (header_comment+reformat_metadata, ''.join(source)))
     if new_import:
         format_cell_log = '\n'.join(["  " + split_line for split_line in new_imports_cell_py.split('\n')])
-        logging.printout(f'[{warn_wrd}] {add_imports_cell_msg}\n{format_cell_log}')
-        format_cell = f'\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
-        update_cell = f'{new_imports_cell_py}\n{format_cell}'
+        logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_add_imports_cell_msg']}\n{format_cell_log}")
+        format_cell = '\n\n'.join(result)+f"\n\n{header_comment}{reformat_main_metadata}"
+        update_cell = f"{new_imports_cell_py}\n{format_cell}"
     else:
-        update_cell = '\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
+        update_cell = '\n\n'.join(result)+f"\n\n{header_comment}{reformat_main_metadata}"
 
     return update_cell
 
@@ -278,12 +293,12 @@ def py2nb(py_str, flags):
                     # if magic command includes a '!' [bang] use subprocess to call the command
                     if strip_line.startswith('!') and flags['c_m']:
                         cmd = strip_line[:-1].replace("!","",1).split(" ")
-                        logging.printout(f'[{warn_wrd}] !{cmd[0]} {cmd_det_msg}')
+                        logging.printout(f"[{translation['defwrd_warn_wrd']}] !{cmd[0]} {translation['defmsg_cmd_det_msg']}")
                         new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                         new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(sub_p_res){cc_trailing_comment}\n"
                         chunk[x] = new_cmd_spaces
                         check_imports(sp_import,flags,'ipy')
-                        logging.printout(f'[{warn_wrd}] {converted_wrd}:\n    {strip_line}  {to_wrd}:\n{new_cmd}')
+                        logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defwrd_converted_wrd']}:\n    {strip_line}  {translation['defwrd_to_wrd']}:\n{new_cmd}")
 
                      # if magic command includes a '%' [percent] convert to python code
                     elif strip_line.startswith('%'):
@@ -296,7 +311,7 @@ def py2nb(py_str, flags):
                             is_cmd = 1
                             if not flags['n_i']:
                                 new_import = True
-                                logging.printout(f'[{warn_wrd}] %{cmd[0]} {cmd_det_msg}')
+                                logging.printout(f"[{translation['defwrd_warn_wrd']}] %{cmd[0]} {translation['defmsg_cmd_det_msg']}")
 
                         if is_cmd:
                             if cmd[0] == "cd" and flags['c_m']:
@@ -326,16 +341,16 @@ def py2nb(py_str, flags):
                                         check_imports(os_import,flags,'ipy')
 
                             if flags['c_m']:
-                                logging.printout(f'[{warn_wrd}] {converted_wrd}:\n    {strip_line}  {to_wrd}:\n    {new_cmd}')
+                                logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defwrd_converted_wrd']}:\n    {strip_line}  {translation['defwrd_to_wrd']}:\n    {new_cmd}")
                         else:
                             if not flags['n_c']:
-                                logging.printout(f'[{warn_wrd}] {un_command_det_msg}',)
-                                logging.printout(f'[{not_wrd}]  {comment_un_cmd_msg}: {strip_line.rstrip()}')
+                                logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_un_command_det_msg']}")
+                                logging.printout(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_comment_un_cmd_msg']}: {strip_line.rstrip()}")
                                 is_unsupported = 1
                                 new_cmd_spaces = f"{spaces}{cc_auto_comment} {strip_line}"
                             else:
-                                logging.printout(f'[{warn_wrd}] {un_command_det_msg}')
-                                logging.printout(f'[{not_wrd}]  {comment_un_cmd_msg}: {strip_line.rstrip()}')
+                                logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_un_command_det_msg']}")
+                                logging.printout(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_comment_un_cmd_msg']}: {strip_line.rstrip()}")
                                 new_cmd_spaces = f"{spaces}{strip_line}"
                         if flags['c_m']:   
                             chunk[x] = new_cmd_spaces
@@ -353,7 +368,7 @@ def py2nb(py_str, flags):
     }
 
     if globals()['new_import']:
-        logging.printout(f'[{warn_wrd}] {add_imports_cell_msg}')
+        logging.printout(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_add_imports_cell_msg']}")
         notebook['cells'].insert(0, {
                 'cell_type': 'code',
                 'metadata': new_imports_meta_ipy,
@@ -382,19 +397,34 @@ def convert(in_file, out_file, extra_flags):
             json.dump(notebook, f, indent=2)
 
     else:
-        logging.critical(file_ext_msg)
+        logging.critical(translation['defmsg_file_ext_msg'])
         sys.exit(1)
 
 
 def main():
+    global translation
     logger.setLevel(logging.INFO)
-    logging.info(log_start_msg)
+    logging.info(log_start)
     logger.addHandler(logging.StreamHandler(sys.stdout))
     argv = sys.argv[1:]
-
+    extra_flags = None if not argv[2:] else argv[2:]
+    lang_flag_used = None if not extra_flags else any(e for e in extra_flags if e.startswith('--lang=') or e.startswith('-l='))
+    if extra_flags and lang_flag_used:
+        parse_lang = [e for e in extra_flags if e.startswith('--lang=') or e.startswith('-l=')]
+        if parse_lang:
+            new_lang = parse_lang[0].split('=')[1]
+            if new_lang in supported_languages:
+                with open(f"{os.path.dirname(__file__)}/lang/{new_lang}.txt") as f:
+                    data = f.read()
+                translation = json.loads(data)
+                logger.info(f"[{translation['defwrd_ok_wrd']}]   {new_lang} {translation['defmsg_lang_supported_msg']}")
+            else:
+                logging.warn(f"[{translation['defwrd_not_wrd']}]  {new_lang} {translation['defmsg_lang_not_supported_msg']}")
+        else:
+            logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_no_lang_msg']} --lang=?? (-l=??)")
     if len(argv) == 0:
-        logging.error(specify_file_msg)
-        logging.error(usage_msg)
+        logging.error(translation['defmsg_specify_file_msg'])
+        logging.error(translation['defmsg_usage_msg'])
         sys.exit(1)
     if len(argv) == 1:
         argv.append('out')
@@ -404,9 +434,9 @@ def main():
 
     in_is_py = False
     in_is_ipynb = False
-    extra_flags = None if not argv[2:] else argv[2:]
 
     if argv[0] in help_flags:
+        logging.info(translation['defmsg_help_called_msg'])
         for key, value in flags_desc.items():
             print(key, value)
         sys.exit(1)
@@ -415,7 +445,7 @@ def main():
     elif in_file_ext == '.ipynb':
         in_is_ipynb = True
     else:
-        logging.error(f'{input_wrd} {file_ext_msg}')
+        logging.error(f"{translation['defwrd_input_wrd']} {translation['defmsg_file_ext_msg']}")
         sys.exit(1)
     if argv[1] == 'out':
         if in_is_ipynb:
@@ -424,7 +454,7 @@ def main():
         if in_is_py:
             argv[1] += '.ipynb'
             out_file_ext = '.ipynb'
-        logging.warn(f'{set_output_ext_msg} {argv[1]}')
+        logging.warn(f"{translation['defmsg_set_output_ext_msg']} {argv[1]}")
     #default flags
     if in_is_ipynb:
         convert_magic = True
@@ -435,12 +465,12 @@ def main():
         no_comment = True
         no_imports = True
     if out_file_ext != '.ipynb' and out_file_ext != '.py':
-        logging.error(f'{output_wrd} {file_ext_msg}')
+        logging.error(f"{translation['defwrd_output_wrd']} {translation['defmsg_file_ext_msg']}")
         sys.exit(1)
     if extra_flags:
         test_flags = [element for element in extra_flags if element not in flags_list]
-        if test_flags:
-            logging.info(help_called_msg)
+        if test_flags and not lang_flag_used:
+            logging.info(translation['defmsg_help_called_msg'])
             for key, value in flags_desc.items():
                 print(key, value)
             sys.exit(1)
@@ -451,19 +481,19 @@ def main():
             # then --convert-magic is negated for --retain-magic [-cm -rm = -rm]
             if '--retain-magic' in extra_flags or '-rm' in extra_flags:
                 if '--convert-magic' in extra_flags or '-cm' in extra_flags:
-                    logging.warn(f'[{warn_wrd}] --retain-magic (-rm) {rm_over_cm_msg} --convert-magic (-cm)')
-                    logging.warn(f'[{warn_wrd}] {rm_over_cm_fall_msg} --retain-magic (-rm)')
-                logging.info(f'[{not_wrd}]  {convert_magic_msg}')
+                    logging.warn(f"[{translation['defwrd_warn_wrd']}] --retain-magic (-rm) {translation['defmsg_rm_over_cm_msg']} --convert-magic (-cm)")
+                    logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_rm_over_cm_fall_msg']} --retain-magic (-rm)")
+                logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_convert_magic_msg']}")
                 convert_magic = False
             else:
-                logging.info(f'[{ok_wrd}]   {convert_magic_msg}')
+                logging.info(f"[{translation['defwrd_ok_wrd']}]   {translation['defmsg_convert_magic_msg']}")
                 convert_magic = True
         #just an extra check to report if --convert-magic flag isnt present
         else:
             if convert_magic:
-                logging.info(f'[{ok_wrd}]   {convert_magic_msg}')
+                logging.info(f"[{translation['defwrd_ok_wrd']}]   {translation['defmsg_convert_magic_msg']}")
             else:
-                logging.info(f'[{not_wrd}]  {convert_magic_msg}')
+                logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_convert_magic_msg']}")
 
         # check for --no-comment , --auto-comment
         if '--no-comment' in extra_flags or '-nc' in extra_flags or '--auto-comment' in extra_flags or '-ac' in extra_flags:
@@ -471,67 +501,67 @@ def main():
             # then --no-comment is negated for --auto-comment [-nc -ac = -ac]
             if '--auto-comment' in extra_flags or '-ac' in extra_flags:
                 if '--no-comment' in extra_flags or '-nc' in extra_flags:
-                    logging.warn(f'[{warn_wrd}] --auto-comment (-ac) {ac_over_nc_msg} --no-comment (-nc)')
-                    logging.warn(f'[{warn_wrd}] {ac_over_nc_fall_msg} --auto-comment (-ac)')
-                logging.info(f'[{ok_wrd}]   {un_comment_msg}')
+                    logging.warn(f"[{translation['defwrd_warn_wrd']}] --auto-comment (-ac) {translation['defmsg_ac_over_nc_msg']} --no-comment (-nc)")
+                    logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_ac_over_nc_fall_msg']} --auto-comment (-ac)")
+                logging.info(f"[{translation['defwrd_ok_wrd']}]   {translation['defmsg_un_comment_msg']}")
                 no_comment = False
             else:
                 no_comment = True
-                logging.info(f'[{not_wrd}]  {un_comment_msg}')
+                logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_un_comment_msg']}")
         #just an extra check to report if --no-comment flag isnt present
         else:
             if no_comment:
-                logging.info(f'[{not_wrd}]  {un_comment_msg}')
+                logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_un_comment_msg']}")
             else:
-                logging.info(f'[{ok_wrd}]   {un_comment_msg}')
+                logging.info(f"[{translation['defwrd_ok_wrd']}]   {translation['defmsg_un_comment_msg']}")
 
         # check for --no-imports flag
         if '--no-imports' in extra_flags or '-ni' in extra_flags:
-            logging.info(f'[{not_wrd}]  {imports_msg}')
+            logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_imports_msg']}")
             no_imports = True
         else:
             if not convert_magic:
                 if '--retain-magic' in extra_flags or '-rm' in extra_flags:
-                    logging.warn(f'[{warn_wrd}] --retain-magic (-rm) {ret_mag_det_msg}')
+                    logging.warn(f"[{translation['defwrd_warn_wrd']}] --retain-magic (-rm) {translation['defmsg_ret_mag_det_msg']}")
                 else:
-                    logging.warn(f'[{warn_wrd}] {def_set_ret_mag_msg}')
+                    logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_def_set_ret_mag_msg']}")
                 no_imports = True
-                logging.info(f'[{not_wrd}]  {imports_msg}')
+                logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_imports_msg']}")
             else:
                 no_imports = False
-                logging.info(f'[{ok_wrd}]   {imports_msg}')
+                logging.info(f"[{translation['defwrd_ok_wrd']}]   {translation['defmsg_imports_msg']}")
 
         # check for --no-outputs flag
         if '--outputs' in extra_flags or '-o' in extra_flags:
-            logging.info(f'[{ok_wrd}]   {outputs_msg}')
+            logging.info(f"[{translation['defwrd_ok_wrd']}]   {translation['defmsg_outputs_msg']}")
         else:
-            logging.info(f'[{not_wrd}]  {outputs_msg}')
+            logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_outputs_msg']}")
             logger.removeHandler(logger.handlers[-1])
 
     # set defaults per files if no flags are set
     else:
         if in_is_ipynb:
-            logging.info(f'[{ok_wrd}]   {convert_magic_msg}')
-            logging.info(f'[{ok_wrd}]   {un_comment_msg}')
-            logging.info(f'[{ok_wrd}]   {imports_msg}')
+            logging.info(f"[{translation['defwrd_ok_wrd']}]   {translation['defmsg_convert_magic_msg']}")
+            logging.info(f"[{translation['defwrd_ok_wrd']}]   {translation['defmsg_un_comment_msg']}")
+            logging.info(f"[{translation['defwrd_ok_wrd']}]   {translation['defmsg_imports_msg']}")
         else:
-            logging.info(f'[{not_wrd}]  {convert_magic_msg}')
-            logging.info(f'[{not_wrd}]  {un_comment_msg}')
-            logging.info(f'[{not_wrd}]  {imports_msg}')
-        logging.info(f'[{not_wrd}]  {outputs_msg}')
+            logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_convert_magic_msg']}")
+            logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_un_comment_msg']}")
+            logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_imports_msg']}")
+        logging.info(f"[{translation['defwrd_not_wrd']}]  {translation['defmsg_outputs_msg']}")
         logger.removeHandler(logger.handlers[-1])
     
     flags = {'c_m': convert_magic, 'n_c': no_comment , 'n_i': no_imports}
 
-    print(f'\n{convert_wrd} {argv[0]} {to_wrd} {argv[1]}')
+    print(f"\n{translation['defwrd_convert_wrd']} {argv[0]} {translation['defwrd_to_wrd']} {argv[1]}")
 
     start_time = time.perf_counter()
     convert(in_file=argv[0], out_file=argv[1], extra_flags=flags)
     end_time = time.perf_counter()
 
-    print(f'{finished_wrd}')
-    print(f'{convert_time_msg} {round(end_time - start_time, 6)} {seconds_wrd}')
-    print(f'\n{log_file_msg}:\n{os.getcwd()}{os.sep}{log_file}')
+    print(f"{translation['defwrd_finished_wrd']}")
+    print(f"{translation['defmsg_convert_time_msg']} {round(end_time - start_time, 6)} {translation['defwrd_seconds_wrd']}")
+    print(f"\n{translation['defmsg_log_file_msg']}:\n{os.getcwd()}{os.sep}{log_file}")
 
 if __name__ == '__main__':
     main()
