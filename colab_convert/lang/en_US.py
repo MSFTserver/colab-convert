@@ -12,9 +12,8 @@
 #############
 
 # default messages
-is_warn = '[WARN]'
-is_on = '[OK]'
-is_off = '[NOT]'
+help_main_1_msg = 'all flags are optional and have set defaults for best results'
+help_main_2_msg = 'use flags to enable or disable certain functions on/off by default'
 lang_detected_msg = 'Detected as a supported Language'
 outputs_msg = 'showing outputs from cc'
 convert_magic_msg = 'convert magic commands'
@@ -29,39 +28,53 @@ usage_msg = 'Usage: colab-convert <input_file> <output_file> <extra_flags>'
 un_command_det_msg = 'unsupported command is detected!'
 comment_un_cmd_msg = 'commenting out unsupported command'
 def_set_ret_mag_msg = 'default settings is retaining magic commands'
-ret_mag_det_msg = '--retain-magic is detected, new imports will NOT be made'
+ret_mag_det_msg = 'is detected, new imports will NOT be made'
 convert_time_msg = 'conversion took'
 log_file_msg = 'log file created'
-ac_over_nc_msg = '--auto-comment (-ac) takes presidence over --no-comment (-nc)'
-ac_over_nc_fall_msg = 'using --auto-comment (-ac)'
-rm_over_cm_msg = '--retain-magic (-rm) takes presidence over --convert-magic (-cm)'
-rm_over_cm_fall_msg = 'using --retain-magic (-rm)'
+ac_over_nc_msg = 'takes presidence over'
+ac_over_nc_fall_msg = 'using'
+rm_over_cm_msg = 'takes presidence over'
+rm_over_cm_fall_msg = 'using'
 cmd_det_msg = 'command detected'
+in_file_msg = 'input file'
+in_file_convert_msg = 'input file to convert'
+out_file_msg = 'output_file'
+out_file_convert_msg = 'output file to write to'
+flags_help_msg = 'extra flags to pass to the converter'
+help_flag_msg = 'Show this help message'
+def_flag_msg = 'Default Flags Set'
+def_flag_tip_msg = 'defaults are determined by input file'
+convert_msg = 'convert magic'
+auto_comment_msg = 'auto comment'
+avl_flags_msg = 'Available Flags'
+avl_flags_tip_msg = 'toggle certain items on or off'
+rm_info_msg = 'Keep magic commands in the output'
+cm_info_msg = 'Convert magic commands to python code'
+ac_info_msg = 'Convert unsupported magic commands to comments'
+nc_info_msg = 'Keep unsupported magic commands'
+ni_info_msg = 'Do not add imports from converted magic commands'
+out_info_msg = 'Outputs to console of conversions and commented lines'
 
 # default words
 convert_wrd = 'convert'
-converted_wrd = f'{convert_wrd}ed'
+converted_wrd = 'converted'
 finished_wrd = 'finished'
+default_wrd = 'default'
 to_wrd = 'to'
+flags_wrd = 'flags'
+usage_wrd = 'usage'
+example_wrd = 'example'
 seconds_wrd = 'seconds'
 input_wrd = 'input'
 output_wrd = 'output'
-
-# default options
-flags_desc = {
-    'Colab-Convert': '\nall flags are optional and have set defaults for best results\nuse flags to enable or disable certain functions on/off by default\n',
-    'Usage:': 'colab-convert <input_file> <output_file> <flags>',
-    'Example:': 'colab-convert in.ipynb out.py -nc -rm -o\n',
-    '<input_file>:': 'input file to convert',
-    '<output_file>:': 'output file to write to',
-    '<flags>:': 'extra flags to pass to the converter\n',
-    '--help': '(-h)\n  Show this help message\n',
-    'Default Flags Set (defaults are determined by input file)': '\n  ipynb input file:\n    [YES] convert magic , [YES] auto comment , [YES] imports , [NO] Outputs\n  py input file:\n    [NO] convert magic , [NO] auto comment , [NO] imports , [NO] Outputs\n',
-    'Available Flags': '\n  toggle certain items on or off\n',
-    '  --retain-magic': ' (-rm)  : Keep magic commands in the output\n      .py default    [ON]\n      .ipynb default [OFF]',
-    '  --convert-magic': ' (-cm) : Convert magic commands to python code\n      .py default    [OFF]\n      .ipynb default [ON]',
-    '  --auto-comment': ' (-ac)  : Convert unsupported magic commands to comments\n      .py default    [OFF]\n      .ipynb default [ON]',
-    '  --no-comment': ' (-nc)    : Keep unsupported magic commands\n      .py default    [ON]\n      .ipynb default [OFF]',
-    '  --no-imports': ' (-ni)    : Do not add imports from converted magic commands\n      .py default    [OFF]\n      .ipynb default [OFF]',
-    '  --outputs': ' (-o)        : Outputs to console of conversions and commented lines.\n      .py default    [OFF]\n      .ipynb default [OFF]',
-}
+outputs_wrd = 'outputs'
+imports_wrd = 'imports'
+warn_wrd = 'WARN'
+ok_wrd = 'OK'
+not_wrd = 'NOT'
+off_wrd = 'OFF'
+on_wrd = 'ON'
+yes_wrd = 'YES'
+no_wrd = 'NO'
+in_wrd = 'in'
+out_wrd = 'out'

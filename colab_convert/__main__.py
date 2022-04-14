@@ -28,7 +28,7 @@ if user_language in supported_languages:
     # extra fallback
     else:
         from .lang.en_US import *
-    print(f'{is_on}   {user_language} {lang_detected_msg}')
+    print(f'[{ok_wrd}]   {user_language} {lang_detected_msg}')
 else:
     print(f'[WARN]  {user_language} not supported. defaulting to English')
     from .lang.en_US import *
@@ -71,6 +71,25 @@ new_imports_cell_ipy = cc_import_comment
 new_import = False
 os_added = False
 sp_added = False
+
+# default options
+flags_desc = {
+    'Colab-Convert': f'\n{help_main_1_msg}\n{help_main_2_msg}n',
+    f'{usage_wrd}:': f'colab-convert <{in_file_msg}> <{out_file_msg}> <{flags_wrd}>',
+    f'{example_wrd}:': f'colab-convert {in_wrd}.ipynb {out_wrd}.py -nc -rm -o\n',
+    f'<{in_file_msg}>:': f'{in_file_convert_msg}',
+    f'<{out_file_msg}>:': f'{out_file_convert_msg}',
+    f'<{flags_wrd}>:': f'{flags_help_msg}\n',
+    f'--help': f'(-h)\n  {help_flag_msg}\n',
+    f'{def_flag_msg} ({def_flag_tip_msg})': f'\n  ipynb {in_file_msg}:\n    [{yes_wrd}] {convert_msg} , [{yes_wrd}] {auto_comment_msg} , [{yes_wrd}] {imports_wrd} , [{no_wrd}] {outputs_wrd}\n  py {in_file_msg}:\n    [{no_wrd}] {convert_msg} , [{no_wrd}] {auto_comment_msg} , [{no_wrd}] {imports_wrd} , [{no_wrd}] {outputs_wrd}\n',
+    f'{avl_flags_msg}': f'\n  {avl_flags_tip_msg}\n',
+    f'  --retain-magic': f' (-rm)  : {rm_info_msg}\n      .py {default_wrd}    [{on_wrd}]\n      .ipynb {default_wrd} [{off_wrd}]',
+    f'  --convert-magic': f' (-cm) : {cm_info_msg}\n      .py {default_wrd}    [{off_wrd}]\n      .ipynb {default_wrd} [{on_wrd}]',
+    f'  --auto-comment': f' (-ac)  : {ac_info_msg}\n      .py {default_wrd}    [{off_wrd}]\n      .ipynb {default_wrd} [{on_wrd}]',
+    f'  --no-comment': f' (-nc)    : {nc_info_msg}\n      .py {default_wrd}    [{on_wrd}]\n      .ipynb {default_wrd} [{off_wrd}]',
+    f'  --no-imports': f' (-ni)    : {ni_info_msg}\n      .py {default_wrd}    [{off_wrd}]\n      .ipynb {default_wrd} [{off_wrd}]',
+    f'  --outputs': f' (-o)        : {out_info_msg}\n      .py {default_wrd}    [{off_wrd}]\n      .ipynb {default_wrd} [{off_wrd}]',
+}
 
 # default options
 magic_list = ["cd","env","set_env"]
@@ -138,12 +157,12 @@ def nb2py(notebook, flags):
                 # if magic command includes a '!' bang use subprocess to call the command
                 if strip_line.startswith('!') and flags['c_m']:
                     cmd = strip_line[:-1].replace("!","",1).split(" ")
-                    logging.printout(f'{is_warn} !{cmd[0]} {cmd_det_msg}')
+                    logging.printout(f'[{warn_wrd}] !{cmd[0]} {cmd_det_msg}')
                     new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                     new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(sub_p_res){cc_trailing_comment}\n"
                     source[x] = new_cmd_spaces
                     check_imports(sp_import,flags,'py')
-                    logging.printout(f'{is_warn} {converted_wrd}:\n    {strip_line}  {to_wrd}:\n{new_cmd}')
+                    logging.printout(f'[{warn_wrd}] {converted_wrd}:\n    {strip_line}  {to_wrd}:\n{new_cmd}')
 
                 # if magic command includes a '%' percent convert to python code
                 elif strip_line.startswith('%'):
@@ -156,7 +175,7 @@ def nb2py(notebook, flags):
                         is_cmd = 1
                         if not flags['n_i']:
                             new_import = True
-                            logging.printout(f'{is_warn} %{cmd[0]} {cmd_det_msg}')
+                            logging.printout(f'[{warn_wrd}] %{cmd[0]} {cmd_det_msg}')
                         
                     # if is command, add the new command to the source  
                     if is_cmd:
@@ -187,16 +206,16 @@ def nb2py(notebook, flags):
                                     check_imports(os_import,flags,'py')
 
                         if flags['c_m']:
-                            logging.printout(f'{is_warn} {converted_wrd}:\n    {strip_line}  {to_wrd}:\n    {new_cmd}')
+                            logging.printout(f'[{warn_wrd}] {converted_wrd}:\n    {strip_line}  {to_wrd}:\n    {new_cmd}')
                     else:
                         if not flags['n_c']:
-                            logging.printout(f'{is_warn} {un_command_det_msg}')
-                            logging.printout(f'{is_off}  {comment_un_cmd_msg}: {strip_line.rstrip()}')
+                            logging.printout(f'[{warn_wrd}] {un_command_det_msg}')
+                            logging.printout(f'[{not_wrd}]  {comment_un_cmd_msg}: {strip_line.rstrip()}')
                             is_unsupported = 1
                             new_cmd_spaces = f"{spaces}{cc_auto_comment} {strip_line}"
                         else:
-                            logging.printout(f'{is_warn} {un_command_det_msg}')
-                            logging.printout(f'{is_off}  {comment_un_cmd_msg}: {strip_line.rstrip()}')
+                            logging.printout(f'[{warn_wrd}] {un_command_det_msg}')
+                            logging.printout(f'[{not_wrd}]  {comment_un_cmd_msg}: {strip_line.rstrip()}')
                             new_cmd_spaces = f"{spaces}{strip_line}"
                     if flags['c_m']:   
                         source[x] = new_cmd_spaces
@@ -206,7 +225,7 @@ def nb2py(notebook, flags):
             result.append("%s%s" % (header_comment+reformat_metadata, ''.join(source)))
     if new_import:
         format_cell_log = '\n'.join(["  " + split_line for split_line in new_imports_cell_py.split('\n')])
-        logging.printout(f'{is_warn} {add_imports_cell_msg}\n{format_cell_log}')
+        logging.printout(f'[{warn_wrd}] {add_imports_cell_msg}\n{format_cell_log}')
         format_cell = f'\n\n'.join(result)+f'\n\n{header_comment}{reformat_main_metadata}'
         update_cell = f'{new_imports_cell_py}\n{format_cell}'
     else:
@@ -259,12 +278,12 @@ def py2nb(py_str, flags):
                     # if magic command includes a '!' [bang] use subprocess to call the command
                     if strip_line.startswith('!') and flags['c_m']:
                         cmd = strip_line[:-1].replace("!","",1).split(" ")
-                        logging.printout(f'{is_warn} !{cmd[0]} {cmd_det_msg}')
+                        logging.printout(f'[{warn_wrd}] !{cmd[0]} {cmd_det_msg}')
                         new_cmd = f"    sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(sub_p_res)\n"
                         new_cmd_spaces = f"{spaces}sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(sub_p_res){cc_trailing_comment}\n"
                         chunk[x] = new_cmd_spaces
                         check_imports(sp_import,flags,'ipy')
-                        logging.printout(f'{is_warn} {converted_wrd}:\n    {strip_line}  {to_wrd}:\n{new_cmd}')
+                        logging.printout(f'[{warn_wrd}] {converted_wrd}:\n    {strip_line}  {to_wrd}:\n{new_cmd}')
 
                      # if magic command includes a '%' [percent] convert to python code
                     elif strip_line.startswith('%'):
@@ -277,7 +296,7 @@ def py2nb(py_str, flags):
                             is_cmd = 1
                             if not flags['n_i']:
                                 new_import = True
-                                logging.printout(f'{is_warn} %{cmd[0]} {cmd_det_msg}')
+                                logging.printout(f'[{warn_wrd}] %{cmd[0]} {cmd_det_msg}')
 
                         if is_cmd:
                             if cmd[0] == "cd" and flags['c_m']:
@@ -307,16 +326,16 @@ def py2nb(py_str, flags):
                                         check_imports(os_import,flags,'ipy')
 
                             if flags['c_m']:
-                                logging.printout(f'{is_warn} {converted_wrd}:\n    {strip_line}  {to_wrd}:\n    {new_cmd}')
+                                logging.printout(f'[{warn_wrd}] {converted_wrd}:\n    {strip_line}  {to_wrd}:\n    {new_cmd}')
                         else:
                             if not flags['n_c']:
-                                logging.printout(f'{is_warn} {un_command_det_msg}',)
-                                logging.printout(f'{is_off}  {comment_un_cmd_msg}: {strip_line.rstrip()}')
+                                logging.printout(f'[{warn_wrd}] {un_command_det_msg}',)
+                                logging.printout(f'[{not_wrd}]  {comment_un_cmd_msg}: {strip_line.rstrip()}')
                                 is_unsupported = 1
                                 new_cmd_spaces = f"{spaces}{cc_auto_comment} {strip_line}"
                             else:
-                                logging.printout(f'{is_warn} {un_command_det_msg}')
-                                logging.printout(f'{is_off}  {comment_un_cmd_msg}: {strip_line.rstrip()}')
+                                logging.printout(f'[{warn_wrd}] {un_command_det_msg}')
+                                logging.printout(f'[{not_wrd}]  {comment_un_cmd_msg}: {strip_line.rstrip()}')
                                 new_cmd_spaces = f"{spaces}{strip_line}"
                         if flags['c_m']:   
                             chunk[x] = new_cmd_spaces
@@ -334,7 +353,7 @@ def py2nb(py_str, flags):
     }
 
     if globals()['new_import']:
-        logging.printout(f'{is_warn} {add_imports_cell_msg}')
+        logging.printout(f'[{warn_wrd}] {add_imports_cell_msg}')
         notebook['cells'].insert(0, {
                 'cell_type': 'code',
                 'metadata': new_imports_meta_ipy,
@@ -432,19 +451,19 @@ def main():
             # then --convert-magic is negated for --retain-magic [-cm -rm = -rm]
             if '--retain-magic' in extra_flags or '-rm' in extra_flags:
                 if '--convert-magic' in extra_flags or '-cm' in extra_flags:
-                    logging.warn(f'{is_warn} {rm_over_cm_msg}')
-                    logging.warn(f'{is_warn} {rm_over_cm_fall_msg}')
-                logging.info(f'{is_off}  {convert_magic_msg}!')
+                    logging.warn(f'[{warn_wrd}] --retain-magic (-rm) {rm_over_cm_msg} --convert-magic (-cm)')
+                    logging.warn(f'[{warn_wrd}] {rm_over_cm_fall_msg} --retain-magic (-rm)')
+                logging.info(f'[{not_wrd}]  {convert_magic_msg}!')
                 convert_magic = False
             else:
-                logging.info(f'{is_on}   {convert_magic_msg}')
+                logging.info(f'[{ok_wrd}]   {convert_magic_msg}')
                 convert_magic = True
         #just an extra check to report if --convert-magic flag isnt present
         else:
             if convert_magic:
-                logging.info(f'{is_on}   {convert_magic_msg}')
+                logging.info(f'[{ok_wrd}]   {convert_magic_msg}')
             else:
-                logging.info(f'{is_off}  {convert_magic_msg}!')
+                logging.info(f'[{not_wrd}]  {convert_magic_msg}!')
 
         # check for --no-comment , --auto-comment
         if '--no-comment' in extra_flags or '-nc' in extra_flags or '--auto-comment' in extra_flags or '-ac' in extra_flags:
@@ -452,54 +471,54 @@ def main():
             # then --no-comment is negated for --auto-comment [-nc -ac = -ac]
             if '--auto-comment' in extra_flags or '-ac' in extra_flags:
                 if '--no-comment' in extra_flags or '-nc' in extra_flags:
-                    logging.warn(f'{is_warn} {ac_over_nc_msg}')
-                    logging.warn(f'{is_warn} {ac_over_nc_fall_msg}')
-                logging.info(f'{is_on}   {un_comment_msg}')
+                    logging.warn(f'[{warn_wrd}] --auto-comment (-ac) {ac_over_nc_msg} --no-comment (-nc)')
+                    logging.warn(f'[{warn_wrd}] {ac_over_nc_fall_msg} --auto-comment (-ac)')
+                logging.info(f'[{ok_wrd}]   {un_comment_msg}')
                 no_comment = False
             else:
                 no_comment = True
-                logging.info(f'{is_off}  {un_comment_msg}!')
+                logging.info(f'[{not_wrd}]  {un_comment_msg}!')
         #just an extra check to report if --no-comment flag isnt present
         else:
             if no_comment:
-                logging.info(f'{is_off}  {un_comment_msg}!')
+                logging.info(f'[{not_wrd}]  {un_comment_msg}!')
             else:
-                logging.info(f'{is_on}   {un_comment_msg}')
+                logging.info(f'[{ok_wrd}]   {un_comment_msg}')
 
         # check for --no-imports flag
         if '--no-imports' in extra_flags or '-ni' in extra_flags:
-            logging.info(f'{is_off}  {imports_msg}')
+            logging.info(f'[{not_wrd}]  {imports_msg}')
             no_imports = True
         else:
             if not convert_magic:
                 if '--retain-magic' in extra_flags or '-rm' in extra_flags:
-                    logging.warn(f'{is_warn} {ret_mag_det_msg}')
+                    logging.warn(f'[{warn_wrd}] --retain-magic (-rm) {ret_mag_det_msg}')
                 else:
-                    logging.warn(f'{is_warn} {def_set_ret_mag_msg}')
+                    logging.warn(f'[{warn_wrd}] {def_set_ret_mag_msg}')
                 no_imports = True
-                logging.info(f'{is_off}  {imports_msg}!')
+                logging.info(f'[{not_wrd}]  {imports_msg}!')
             else:
                 no_imports = False
-                logging.info(f'{is_on}   {imports_msg}')
+                logging.info(f'[{ok_wrd}]   {imports_msg}')
 
         # check for --no-outputs flag
         if '--outputs' in extra_flags or '-o' in extra_flags:
-            logging.info(f'{is_on}   {outputs_msg}')
+            logging.info(f'[{ok_wrd}]   {outputs_msg}')
         else:
-            logging.info(f'{is_off}  {outputs_msg}!')
+            logging.info(f'[{not_wrd}]  {outputs_msg}!')
             logger.removeHandler(logger.handlers[-1])
 
     # set defaults per files if no flags are set
     else:
         if in_is_ipynb:
-            logging.info(f'{is_on}   {convert_magic_msg}')
-            logging.info(f'{is_on}   {un_comment_msg}')
-            logging.info(f'{is_on}   {imports_msg}!')
+            logging.info(f'[{ok_wrd}]   {convert_magic_msg}')
+            logging.info(f'[{ok_wrd}]   {un_comment_msg}')
+            logging.info(f'[{ok_wrd}]   {imports_msg}!')
         else:
-            logging.info(f'{is_off}  {convert_magic_msg}!')
-            logging.info(f'{is_off}  {un_comment_msg}!')
-            logging.info(f'{is_off}  {imports_msg}!')
-        logging.info(f'{is_off}  {outputs_msg}!')
+            logging.info(f'[{not_wrd}]  {convert_magic_msg}!')
+            logging.info(f'[{not_wrd}]  {un_comment_msg}!')
+            logging.info(f'[{not_wrd}]  {imports_msg}!')
+        logging.info(f'[{not_wrd}]  {outputs_msg}!')
         logger.removeHandler(logger.handlers[-1])
     
     flags = {'c_m': convert_magic, 'n_c': no_comment , 'n_i': no_imports}
