@@ -1,5 +1,14 @@
 import sys, time, os, logging, locale, json, json5
 
+# set up logging, adds new logger mode and level
+log_file = 'cc-outputs.log'
+logger= logging.getLogger()
+handler = logging.FileHandler(log_file, 'a', 'utf-8')
+handler.setFormatter(logging.Formatter('%(asctime)s : %(message)s'))
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler(sys.stdout))
+
 # use of RFC 1766 to get language code
 sup_lang = {
     'en_US': ['en_US', 'en', 'english', 'eng'], # English
@@ -14,36 +23,32 @@ translation = None
 for i in sup_lang:
     supported_languages.extend(sup_lang[i])
 
+first_run = 1
 def get_language(user_language):
-    global translation
+    global translation, first_run
     is_lang = False
     if user_language in supported_languages:
         for k,v in sup_lang.items():
             if user_language in v:
                 is_lang = True
                 lang_file_name = k
+                break
     else:
         lang_file_name = 'en_US'
 
     with open(f"{os.path.dirname(__file__)}/lang/{lang_file_name}.txt", 'r', encoding='utf-8') as f:
         translation = json5.load(f)
-
     if is_lang:
-        print(f"[{translation['defwrd_ok_wrd']}]   {user_language} {translation['defmsg_lang_detected_msg']}")
+        if first_run:
+            first_run = False
+            logging.info(f"\n---------------------------\n----------[{translation['defwrd_start_wrd']}]----------\n---------------------------")
+        logging.info(f"[{translation['defwrd_ok_wrd']}]   {user_language} {translation['defmsg_lang_detected_msg']}")
     else:
-        print(f"[WARN]  {user_language} not supported. defaulting to English")
+        logging.warn(f"[WARN]  {user_language} not supported. defaulting to English")
 
 # detect user locale
 user_language = locale.getdefaultlocale()[0]
 get_language(user_language)
-
-# set up logging, adds new logger mode and level
-log_file = 'cc-outputs.log'
-logger= logging.getLogger()
-handler = logging.FileHandler(log_file, 'a', 'utf-8')
-handler.setFormatter(logging.Formatter('%(asctime)s : %(message)s'))
-logger.addHandler(handler)
-log_start = f"\n---------------------------\n----------[{translation['defwrd_start_wrd']}]----------\n---------------------------"
 
 # default conversion code
 header_comment = '# %%\n'
@@ -76,11 +81,9 @@ flags_desc = {
     f"  --auto-comment": f" (-ac)  : {translation['defmsg_ac_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_on_wrd']}]",
     f"  --no-comment": f" (-nc)    : {translation['defmsg_nc_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_on_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
     f"  --no-imports": f" (-ni)    : {translation['defmsg_ni_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
-    f"  --outputsv": f" (-o)        : {translation['defmsg_out_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
-    f"  --lang=": f" (-l=)         : {translation['defmsg_lang_info_msg']}\n       {translation['defwrd_default_wrd']} [English]\n      --lang=en_US"
+    f"  --outputsv": f" (-o)       : {translation['defmsg_out_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
+    f"  --lang=": f" (-l=)         : {translation['defmsg_lang_info_msg']}\n       {translation['defwrd_default_wrd']} [English]\n      --lang=en_US\n      {', '.join(supported_languages)}"
 }
-
-# default options
 magic_list = ["cd","env","set_env"]
 help_flags = ['--help', '-h', '?']
 flags_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm','--no-imports', '-ni', '--outputs', '-o', '--lang=' , '-l=']
@@ -377,9 +380,6 @@ def convert(in_file, out_file, extra_flags):
 
 def main():
     global translation
-    logger.setLevel(logging.INFO)
-    logging.info(log_start)
-    logger.addHandler(logging.StreamHandler(sys.stdout))
     argv = sys.argv[1:]
     extra_flags = None if not argv[2:] else argv[2:]
     lang_flag_used = None if not extra_flags else any(e for e in extra_flags if e.startswith('--lang=') or e.startswith('-l='))
@@ -388,11 +388,7 @@ def main():
         parse_lang = [e for e in extra_flags if e.startswith('--lang=') or e.startswith('-l=')]
         if parse_lang:
             new_lang = parse_lang[0].split('=')[1]
-            if new_lang in supported_languages:
-                get_language(new_lang)
-                logger.info(f"[{translation['defwrd_ok_wrd']}]   {new_lang} {translation['defmsg_lang_supported_msg']}")
-            else:
-                logging.warn(f"[{translation['defwrd_not_wrd']}]  {new_lang} {translation['defmsg_lang_not_supported_msg']}")
+            get_language(new_lang)
         else:
             logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_no_lang_msg']} --lang=?? (-l=??)")
 
