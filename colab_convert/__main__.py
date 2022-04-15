@@ -2,45 +2,36 @@ import sys, time, os, logging, locale, json, json5
 
 # use of RFC 1766 to get language code
 sup_lang = {
-    'en': ['en_US', 'en', 'english', 'eng'], # English
-    'de':  ['de_DE', 'de'], # German
-    'fr': ['fr_FR', 'fr'], # French
-    'es': ['es_ES', 'es'], # Spanish
-    'ar': ['ar_EG', 'ar'], # Arabic
-    'nl': ['nl_NL', 'nl'] # Dutch
+    'en_US': ['en_US', 'en', 'english', 'eng'], # English
+    #'de_DE':  ['de_DE', 'de', 'german', 'ger', 'deutsch'], # German
+    #'fr_FR': ['fr_FR', 'fr', 'french', 'fre', 'français', 'française'],  # French
+    #'es_ES': ['es_ES', 'es', 'spanish', 'spa', 'español', 'española'],  # Spanish
+    #'ar_AR': ['ar_EG', 'ar', 'eurabaa', 'ara', 'عربى'],  # Arabic
+    'nl_NL': ['nl_NL', 'nl', 'dutch', 'dut', 'nlt', 'nederlands']   # Dutch
 }
 supported_languages = []
 translation = None
 for i in sup_lang:
     supported_languages.extend(sup_lang[i])
 
-def load_language(lang_file_name):
-    global translation
-    with open(f"{os.path.dirname(__file__)}/lang/{lang_file_name}.txt", 'r', encoding='utf-8') as f:
-        translation = json5.load(f)
 def get_language(user_language):
     global translation
+    is_lang = False
     if user_language in supported_languages:
-        if user_language in sup_lang['en']:
-            load_language('en_US')
-        elif user_language in sup_lang['de']:
-            load_language('de_DE')
-        elif user_language in sup_lang['fr']:
-            load_language('fr_FR')
-        elif user_language in sup_lang['es']:
-            load_language('es_ES')
-        elif user_language in sup_lang['ar']:
-            load_language('ar_AR')
-        elif user_language in sup_lang['nl']:
-            load_language('nl_NL')
-        # extra fallback
-        else:
-            print(f"[WARN]  {user_language} not supported. defaulting to English")
-            load_language('en_US')
+        for k,v in sup_lang.items():
+            if user_language in v:
+                is_lang = True
+                lang_file_name = k
+    else:
+        lang_file_name = 'en_US'
+
+    with open(f"{os.path.dirname(__file__)}/lang/{lang_file_name}.txt", 'r', encoding='utf-8') as f:
+        translation = json5.load(f)
+
+    if is_lang:
         print(f"[{translation['defwrd_ok_wrd']}]   {user_language} {translation['defmsg_lang_detected_msg']}")
     else:
         print(f"[WARN]  {user_language} not supported. defaulting to English")
-        load_language('en_US')
 
 # detect user locale
 user_language = locale.getdefaultlocale()[0]
