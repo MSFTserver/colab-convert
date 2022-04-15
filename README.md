@@ -16,6 +16,10 @@ Atom/Hydrogen or VSCode/Python allows creating a python files split into cells w
 - logs all changes to a log file for review
 - converted magic commands are appended with `#<cc-cm>`
 - commented magic commands are prefixed with `#<cc-ac>`
+- multi-lingual support to detect system language and let users choose
+    - Arabic, Dutch, English, French, German, Spanish
+        - consider helping expand translations by adding your langauge in the `/lang` folder
+
 
 
 ## Install & Basic Usage
@@ -68,6 +72,10 @@ Available Flags
   --outputs  (-o)        : Outputs to console of conversions and commented lines.
       .py default    [OFF]
       .ipynb default [OFF]
+  --lang=  (-l=)         : Language to change output messages to
+       default [English]
+      --lang=en_US
+      en_US, en, english, eng, nl_NL, nl, dutch, dut, nlt, nederlands
 ```
 
 ## Troubleshooting
