@@ -1,0 +1,87 @@
+////////////////////////////
+// Multi Language Support //
+////////////////////////////
+
+// Du kannst das als Vorlage verwenden, um neue Sprachunterstützung für das Projekt zu erstellen!
+
+// Wörter welche nicht verändert werden sollen, sind "colab-convert" "ipynb" "py"
+// nur die Nachricht nach dem Gleichheitszeichen bearbeiten
+
+///////////////
+//  Deutsch  //
+//   de_DE   //
+///////////////
+{
+// Standardmeldungen
+'defmsg_help_main_1_msg' : 'alle Flaggen sind optional und haben Standardwerte für beste Ergebnisse',
+'defmsg_help_main_2_msg' : 'Flags verwenden, um bestimmte Funktionen standardmäßig ein- oder auszuschalten',
+'defmsg_lang_detected_msg' : 'wird als unterstützte Sprache erkannt',
+'defmsg_outputs_msg' : 'Ausgaben vom Konvertierer anzeigen lassen',
+'defmsg_convert_magic_msg' : 'magische Befehle konvertieren',
+'defmsg_un_comment_msg' : 'nicht unterstützte magische Befehle auskommentieren',
+'defmsg_imports_msg' : 'Importierungen durch den Konverter behalten',
+'defmsg_add_imports_cell_msg' : 'Hinzufügen neuer Importe an den Anfang der Datei',
+'defmsg_help_called_msg' : 'Hilfemeldung aufgerufen',
+'defmsg_file_ext_msg' : 'Datei muss .ipynb oder .py sein',
+'defmsg_set_output_ext_msg' : 'Einstellung der Ausgabedatei auf',
+'defmsg_specify_file_msg' : 'bitte mindestens eine zu konvertierende Datei angeben',
+'defmsg_usage_msg' : 'Benutzung: colab-convert <Eingabedatei> <Ausgabedatei> <Extra Flaggen>',
+'defmsg_un_command_det_msg' : 'ein nicht unterstützter Befehl wurde entdeckt',
+'defmsg_comment_un_cmd_msg' : 'Auskommentieren eines nicht unterstützten Befehls',
+'defmsg_def_set_ret_mag_msg' : 'Standardeinstellungen behalten magischen Befehle bei',
+'defmsg_ret_mag_det_msg' : 'wurde entdeckt, es werden KEINE neuen Importe vorgenommen.',
+'defmsg_convert_time_msg' : 'Umstellung dauerte',
+'defmsg_log_file_msg' : 'Logdatei erstellt',
+'defmsg_ac_over_nc_msg' : 'ersetzt',
+'defmsg_ac_over_nc_fall_msg' : 'benutzt',
+'defmsg_rm_over_cm_msg' : 'ersetzt',
+'defmsg_rm_over_cm_fall_msg' : 'bentuzt',
+'defmsg_cmd_det_msg' : 'Befehl erkannt',
+'defmsg_in_file_msg' : 'Eingabedatei',
+'defmsg_in_file_convert_msg' : 'zu konvertierende Eingabedatei',
+'defmsg_out_file_msg' : 'Ausgabedatei',
+'defmsg_out_file_convert_msg' : 'Ausgabedatei, in die geschrieben werden soll',
+'defmsg_flags_help_msg' : 'zusätzliche Flaggen zur Übergabe an den Konverter',
+'defmsg_help_flag_msg' : 'Diese Hilfemeldung anzeigen',
+'defmsg_def_flag_msg' : 'Standard Flaggen gesetzt',
+'defmsg_def_flag_tip_msg' : 'Standardwerte werden durch die Eingabedatei bestimmt',
+'defmsg_convert_msg' : 'Magie konvertieren',
+'defmsg_auto_comment_msg' : 'Autokommentar',
+'defmsg_avl_flags_msg' : 'Verfügbare Flaggen',
+'defmsg_avl_flags_tip_msg' : 'bestimmte Elemente ein- oder ausschalten',
+'defmsg_rm_info_msg' : 'Magische Befehle in der Ausgabe behalten',
+'defmsg_cm_info_msg' : 'Magische Befehle in Python Code umwandeln',
+'defmsg_ac_info_msg' : 'Nicht unterstützte magische Befehle in Kommentare umwandeln'
+'defmsg_nc_info_msg' : 'Nicht unterstützte magische Befehle beibehalten',
+'defmsg_ni_info_msg' : 'Keine Importe aus konvertierten magischen Befehlen hinzufügen',
+'defmsg_out_info_msg' : 'Ausgaben der Konvertierungen und kommentierten Zeilen auf der Konsole',
+'defmsg_no_lang_msg' : 'Keine Sprache im Befehl erkannt',
+'defmsg_lang_info_msg' : 'Sprache zum Ändern der Ausgabemeldungen in',
+'defmsg_lang_not_supported_msg' : 'Sprache nicht unterstützt',
+'defmsg_lang_supported_msg' : 'Unterstützte Sprache',
+
+// Standardwörter
+'defwrd_convert_wrd' : 'konvertieren',
+'defwrd_converted_wrd' : 'konvertiert',
+'defwrd_finished_wrd' : 'fertig',
+'defwrd_default_wrd' : 'Standard',
+'defwrd_to_wrd' : 'zu',
+'defwrd_flags_wrd' : 'Flaggen',
+'defwrd_usage_wrd' : 'Nutzung',
+'defwrd_example_wrd' : 'Beispiel',
+'defwrd_seconds_wrd' : 'Sekunden',
+'defwrd_input_wrd' : 'Eingabe',
+'defwrd_output_wrd' : 'Ausgabe',
+'defwrd_outputs_wrd' : 'Ausgaben',
+'defwrd_imports_wrd' : 'Importe',
+'defwrd_start_wrd' : 'START',
+'defwrd_warn_wrd' : 'WARNUNG',
+'defwrd_ok_wrd' : 'OK',
+'defwrd_not_wrd' : 'NICHT',
+'defwrd_off_wrd' : 'AUS',
+'defwrd_on_wrd' : 'AN',
+'defwrd_yes_wrd' : 'JA',
+'defwrd_no_wrd' : 'NEIN',
+'defwrd_in_wrd' : 'in',
+'defwrd_out_wrd' : 'aus',
+}

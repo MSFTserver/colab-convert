@@ -12,10 +12,9 @@ logger.addHandler(logging.StreamHandler(sys.stdout))
 # use of RFC 1766 to get language code
 sup_lang = {
     'en_US': ['en_US', 'en', 'english', 'eng'], # English
-    #'de_DE':  ['de_DE', 'de', 'german', 'ger', 'deutsch'], # German
-    #'fr_FR': ['fr_FR', 'fr', 'french', 'fre', 'français', 'française'],  # French
-    #'es_ES': ['es_ES', 'es', 'spanish', 'spa', 'español', 'española'],  # Spanish
-    #'ar_AR': ['ar_EG', 'ar', 'eurabaa', 'ara', 'عربى'],  # Arabic
+    'de_DE':  ['de_DE', 'de', 'german', 'ger', 'deutsch'], # German
+    'es_ES': ['es_ES', 'es', 'spanish', 'spa', 'español', 'española'],  # Spanish
+    'ar_DZ': ['ar_EG', 'ar_DZ' 'ar', 'arabic', 'ara', 'عربى'],  # Arabic
     'nl_NL': ['nl_NL', 'nl', 'dutch', 'dut', 'nlt', 'nederlands']   # Dutch
 }
 supported_languages = []

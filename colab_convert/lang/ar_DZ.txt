@@ -1,0 +1,87 @@
+////////////////////////////
+// Multi Language Support //
+////////////////////////////
+
+// you can use this as template to create new language support for the project!
+
+// words not to edit are "colab-convert" "ipynb" "py"
+// only edit the message after the equal sign
+
+//////////////
+//  Arabic  //
+//  ar_DZ   //
+//////////////
+{
+// default messages
+'defmsg_help_main_1_msg' : 'جميع العلامات اختيارية ولديها تعيينات افتراضية للحصول على أفضل النتائج',
+'defmsg_help_main_2_msg' : 'استخدام العلامات لتمكين أو تعطيل وظائف معينة تشغيل / إيقاف بشكل افتراضي',
+'defmsg_lang_detected_msg' : 'تم الاكتشاف كلغة مدعومة ',
+'defmsg_outputs_msg' : 'تظهر النواتج من المحول',
+'defmsg_convert_magic_msg' : 'تحويل الاوامر السحرية',
+'defmsg_un_comment_msg' : 'التعليق على الأوامر السحرية غير المدعومة',
+'defmsg_imports_msg' : 'حفظ الواردات الجديدة التي أدلى بها المحول',
+'defmsg_add_imports_cell_msg' : 'إضافة عمليات استيراد جديدة إلى أعلى الملف',
+'defmsg_help_called_msg' : 'ضع رسالة المساعدة',
+'defmsg_file_ext_msg' : 'الملف يجب ان يكون بصيغة .ipynb او .py',
+'defmsg_set_output_ext_msg' : 'تعيين ملف الإخراج إلى',
+'defmsg_specify_file_msg' : 'حدد على الاقل ملف واحد للتحويل',
+'defmsg_usage_msg' : 'الاستعمال: colab-convert <input file> <output file> <extra flags>',
+'defmsg_un_command_det_msg' : 'تم اكتشاف امر غير مدعوم',
+'defmsg_comment_un_cmd_msg' : 'التعليق خارج أمر غير مدعوم',
+'defmsg_def_set_ret_mag_msg' : 'الإعدادات الافتراضية هي الاحتفاظ بالأوامر السحرية',
+'defmsg_ret_mag_det_msg' : 'تم اكتشافه ، لن يتم إجراء عمليات استيراد جديدة',
+'defmsg_convert_time_msg' : 'استغرق التحويل',
+'defmsg_log_file_msg' : 'تم إنشاء ملف السجل',
+'defmsg_ac_over_nc_msg' : 'الأسبقية',
+'defmsg_ac_over_nc_fall_msg' : 'استعمال',
+'defmsg_rm_over_cm_msg' : 'الأسبقية',
+'defmsg_rm_over_cm_fall_msg' : 'استعمال',
+'defmsg_cmd_det_msg' : 'اكتشف الامر',
+'defmsg_in_file_msg' : 'ملف الإدخال',
+'defmsg_in_file_convert_msg' : 'ملف الإدخال للتحويل',
+'defmsg_out_file_msg' : 'مخرج الملف',
+'defmsg_out_file_convert_msg' : 'ملف الإخراج للكتابة إليه',
+'defmsg_flags_help_msg' : 'أعلام إضافية لتمريرها إلى المحول',
+'defmsg_help_flag_msg' : 'اضهار رسالة المساعدة هذه',
+'defmsg_def_flag_msg' : 'مجموعة الإشارات الافتراضية',
+'defmsg_def_flag_tip_msg' : 'يتم تحديد القيم الافتراضية من خلال ملف الإدخال',
+'defmsg_convert_msg' : 'تحويل السحر',
+'defmsg_auto_comment_msg' : 'التعليق التلقائي',
+'defmsg_avl_flags_msg' : 'الأعلام المتوفرة',
+'defmsg_avl_flags_tip_msg' : 'تبديل بعض العناصر أو إيقاف تشغيلها',
+'defmsg_rm_info_msg' : 'احتفظ بالأوامر السحرية في الإخراج',
+'defmsg_cm_info_msg' : 'تحويل الأوامر السحرية إلى كود بيثون',
+'defmsg_ac_info_msg' : 'تحويل الأوامر السحرية غير المدعومة إلى تعليقات',
+'defmsg_nc_info_msg' : 'احتفظ بالأوامر السحرية غير المدعومة',
+'defmsg_ni_info_msg' : 'لا تقم بإضافة الواردات من الأوامر السحرية المحولة',
+'defmsg_out_info_msg' : 'مخرجات وحدة التحكم في التحويلات وأسطر التعليق',
+'defmsg_no_lang_msg' : 'لم يتم اكتشاف لغة في الأمر',
+'defmsg_lang_info_msg' : 'لغة لتغيير رسائل الإخراج إليها',
+'defmsg_lang_not_supported_msg' : 'اللغة غير مدعومة',
+'defmsg_lang_supported_msg' : 'اللغة مدعومة',
+
+// default words
+'defwrd_convert_wrd' : 'حول',
+'defwrd_converted_wrd' : 'تم التحويل',
+'defwrd_finished_wrd' : 'اكتمل',
+'defwrd_default_wrd' : 'الافتراضية',
+'defwrd_to_wrd' : 'الى',
+'defwrd_flags_wrd' : 'الاعلام',
+'defwrd_usage_wrd' : 'الاستعمال',
+'defwrd_example_wrd' : 'مثال',
+'defwrd_seconds_wrd' : 'الثواني',
+'defwrd_input_wrd' : 'مدخل',
+'defwrd_output_wrd' : 'مخرج',
+'defwrd_outputs_wrd' : 'النواتج',
+'defwrd_imports_wrd' : 'الواردات ',
+'defwrd_start_wrd' : 'ابدا',
+'defwrd_warn_wrd' : 'تحذير ',
+'defwrd_ok_wrd' : 'حسنا',
+'defwrd_not_wrd' : 'لا',
+'defwrd_off_wrd' : 'ايقاف',
+'defwrd_on_wrd' : 'تشغيل',
+'defwrd_yes_wrd' : 'نعم',
+'defwrd_no_wrd' : 'لا',
+'defwrd_in_wrd' : 'في',
+'defwrd_out_wrd' : 'خارج',
+}
