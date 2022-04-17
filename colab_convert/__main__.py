@@ -191,10 +191,9 @@ def nb2py(notebook, flags):
                                     new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] = '{cmd[2]}'{cc_trailing_comment}\n"
                                     check_imports(os_import,flags,'py')
                             else:
-                                if flags['c_m']:
-                                    new_cmd = f"for k, v in os.environ.items():\n    print(f'{{k}}={{v}}')\n"
-                                    new_cmd_spaces = f"{spaces}for k, v in os.environ.items():{cc_trailing_comment}\n{spaces}    print(f'{{k}}={{v}}'){cc_trailing_comment}\n"
-                                    check_imports(os_import,flags,'py')
+                                new_cmd = f"for k, v in os.environ.items():\n    print(f'{{k}}={{v}}')\n"
+                                new_cmd_spaces = f"{spaces}for k, v in os.environ.items():{cc_trailing_comment}\n{spaces}    print(f'{{k}}={{v}}'){cc_trailing_comment}\n"
+                                check_imports(os_import,flags,'py')
 
                         if flags['c_m']:
                             logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defwrd_converted_wrd']}:\n    {strip_line}  {translation['defwrd_to_wrd']}:\n    {new_cmd}")
