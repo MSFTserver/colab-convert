@@ -78,6 +78,91 @@ Available Flags
       en_US, en, english, eng, nl_NL, nl, dutch, dut, nlt, nederlands
 ```
 
+# Conversion Code used
+
+### Magic commands using bang (!)
+
+for this particular magic we send the command to the subprocess system and print the results
+
+```python
+# e.g 
+#   !git clone https://test.com/test/test.git
+
+sub_p_res = subprocess.run(['git', 'clone' ,'https://test.com/test/test.git'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+    print(sub_p_res)
+```
+
+### Magic commands using percent (%)
+
+%chdir - change directory
+```python
+# e.g 
+#   %chdir test-directory
+
+os.chdir('test-directory')
+```
+
+%env & %set_env - get, set or list environmental variables
+
+this command actually has 5 ways to be used
+```console
+%env
+    lists all environment variables/values
+%env var
+    get value for var
+[%env or %set_env] var val
+    set value for var
+[%env or %set_env] var=val
+    set value for var
+[%env or %set_env] var=$val
+    set value for var, using python expansion if possible
+```
+```python
+# e.g 
+#   %env
+
+for k, v in os.environ.items():
+    print(f'{k}={v}')
+```
+```python
+# e.g 
+#   %env var
+
+os.environ['var']
+```
+```python
+# e.g 
+#   %env var value
+#   %set_env var value
+
+os.environ['var'] = 'value'
+```
+```python
+# e.g 
+#   %env var=value
+#   %set_env var=value
+
+os.environ['var'] = 'value'
+```
+```python
+# e.g 
+#   %env var=$value
+#   %set_env var=$value
+
+os.environ['var'] = '$value'
+```
+
+### Unsupported Magic Commands
+
+these will be commented out
+```python
+# e.g 
+#   %quickref
+
+#<cc-cm> %quickref
+```
+
+
 ## Troubleshooting
 
 * If encoding problems on Windows try using `python>=3.7`, setting `set PYTHONUTF8=1` in Windows console and use `colab-convert` for UTF-8 files only. If using [Git-Bash on Windows](https://git-scm.com/download/win) setting:
