@@ -1,0 +1,184 @@
+2022-04-19 15:25:23,150 : 
+---------------------------
+----------[START]----------
+---------------------------
+2022-04-19 15:25:23,150 : [OK]   en_US Detected as a supported Language
+2022-04-19 15:25:23,158 : [OK]   convert magic commands
+2022-04-19 15:25:23,158 : [OK]   commenting out unsupported magic commands
+2022-04-19 15:25:23,158 : [OK]   keeping new imports made by converter
+2022-04-19 15:25:23,159 : [NOT]  showing outputs from converter
+2022-04-19 15:25:23,160 : [WARN] !touch command detected
+2022-04-19 15:25:23,160 : [WARN] converted:
+    !touch test_file.txt
+  to:
+    sub_p_res = subprocess.run(['touch', 'test_file.txt'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+    print(sub_p_res)
+
+2022-04-19 15:25:23,161 : [WARN] !git command detected
+2022-04-19 15:25:23,161 : [WARN] converted:
+    !git clone https://github.com/MSFTserver/pytorch3d-lite.git
+  to:
+    sub_p_res = subprocess.run(['git', 'clone', 'https://github.com/MSFTserver/pytorch3d-lite.git'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+    print(sub_p_res)
+
+2022-04-19 15:25:23,161 : [WARN] %pip command detected
+2022-04-19 15:25:23,161 : [WARN] converted:
+    %pip list --outdated
+  to:
+    pip_sub_p_res = subprocess.run(['pip', 'list', '--outdated'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+    print(pip_sub_p_res)
+
+2022-04-19 15:25:23,161 : [WARN] %ls command detected
+2022-04-19 15:25:23,161 : [WARN] converted:
+    %ls
+  to:
+    os.listdir()
+
+2022-04-19 15:25:23,161 : [WARN] %cd command detected
+2022-04-19 15:25:23,161 : [WARN] converted:
+    %cd ..
+  to:
+    os.chdir('..')
+
+2022-04-19 15:25:23,161 : [WARN] %ls command detected
+2022-04-19 15:25:23,161 : [WARN] converted:
+    %ls
+  to:
+    os.listdir()
+
+2022-04-19 15:25:23,161 : [WARN] %rm command detected
+2022-04-19 15:25:23,161 : [WARN] converted:
+    %rm -r pytorch3d-lite
+  to:
+    shutil.rmtree('pytorch3d-lite')
+
+2022-04-19 15:25:23,161 : [WARN] %mkdir command detected
+2022-04-19 15:25:23,161 : [WARN] converted:
+    %mkdir test_dir/test_subdir
+  to:
+    os.makedirs('test_dir/test_subdir')
+
+2022-04-19 15:25:23,161 : [WARN] %cat command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %cat test_file.txt
+  to:
+    cat_read_file = open('test_file.txt', 'r')
+    cat_read_text = cat_read_file.read()
+    print(cat_read_text)
+    cat_read_file.close()
+2022-04-19 15:25:23,162 : [WARN] %mv command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %mv test_file.txt test_dir
+  to:
+    shutil.move('test_file.txt', 'test_dir/test_file.txt')
+
+2022-04-19 15:25:23,162 : [WARN] %ls command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %ls test_dir
+  to:
+    os.listdir('test_dir')
+
+2022-04-19 15:25:23,162 : [WARN] %cp command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %cp test_dir/test_file.txt test_dir/test_subdir/test_file.txt
+  to:
+    shutil.copy('test_dir/test_file.txt', 'test_dir/test_subdir/test_file.txt')
+
+2022-04-19 15:25:23,162 : [WARN] %ls command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %ls
+  to:
+    os.listdir()
+
+2022-04-19 15:25:23,162 : [WARN] %rm command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %rm test_file.txt
+  to:
+    os.remove('test_file.txt')
+
+2022-04-19 15:25:23,162 : [WARN] %ls command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %ls
+  to:
+    os.listdir()
+
+2022-04-19 15:25:23,162 : [WARN] %mv command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %mv test_dir/test_file.txt test_dir/test_subdir/test_file.txt
+  to:
+    shutil.move('test_dir/test_file.txt', 'test_dir/test_subdir/test_file.txt')
+
+2022-04-19 15:25:23,162 : [WARN] %env command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %env
+  to:
+    for k, v in os.environ.items():
+    print(f'{k}={v}')
+
+2022-04-19 15:25:23,162 : [WARN] %env command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %env PATH
+  to:
+    os.environ['PATH']
+
+2022-04-19 15:25:23,162 : [WARN] %env command detected
+2022-04-19 15:25:23,162 : [WARN] converted:
+    %env TEST_COLAB_CONVERT=HELLO
+  to:
+    os.environ['TEST_COLAB_CONVERT'] = 'HELLO'
+
+2022-04-19 15:25:23,163 : [WARN] %set_env command detected
+2022-04-19 15:25:23,163 : [WARN] converted:
+    %set_env TEST_COLAB_CONVERT=HELLO
+  to:
+    os.environ['TEST_COLAB_CONVERT'] = 'HELLO'
+
+2022-04-19 15:25:23,163 : [WARN] %env command detected
+2022-04-19 15:25:23,163 : [WARN] converted:
+    %env TEST_COLAB_CONVERT
+  to:
+    os.environ['TEST_COLAB_CONVERT']
+
+2022-04-19 15:25:23,163 : [WARN] %env command detected
+2022-04-19 15:25:23,163 : [WARN] converted:
+    %env TEST_COLAB_CONVERT GOODBYE
+  to:
+    os.environ['TEST_COLAB_CONVERT'] = 'GOODBYE'
+
+2022-04-19 15:25:23,163 : [WARN] %set_env command detected
+2022-04-19 15:25:23,163 : [WARN] converted:
+    %set_env TEST_COLAB_CONVERT GOODBYE
+  to:
+    os.environ['TEST_COLAB_CONVERT'] = 'GOODBYE'
+
+2022-04-19 15:25:23,163 : [WARN] %env command detected
+2022-04-19 15:25:23,163 : [WARN] converted:
+    %env TEST_COLAB_CONVERT
+  to:
+    os.environ['TEST_COLAB_CONVERT']
+
+2022-04-19 15:25:23,163 : [WARN] unsupported command is detected
+2022-04-19 15:25:23,163 : [NOT]  commenting out unsupported command: %notValid
+2022-04-19 15:25:23,163 : [WARN] adding new imports to the top of the file
+  # %%
+  # !! {"metadata":{
+  # !!   "id":"cc-imports"
+  # !! }}
+  
+  #<cc-imports>
+  
+  import subprocess
+  import os
+  import shutil
+  
+2022-04-19 15:25:23,949 : 
+---------------------------
+----------[START]----------
+---------------------------
+2022-04-19 15:25:23,949 : [OK]   en_US Detected as a supported Language
+2022-04-19 15:25:23,951 : [NOT]  convert magic commands
+2022-04-19 15:25:23,959 : [NOT]  commenting out unsupported magic commands
+2022-04-19 15:25:23,959 : [NOT]  keeping new imports made by converter
+2022-04-19 15:25:23,960 : [NOT]  showing outputs from converter
+2022-04-19 15:25:23,961 : [WARN] unsupported command is detected
+2022-04-19 15:25:23,961 : [NOT]  commenting out unsupported command: %notValid
