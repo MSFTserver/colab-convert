@@ -6,6 +6,8 @@ Converts ipython/Google Colab Notebooks into runable Python code and vice versa
 
 - converts files: .ipynb to .py and .py to .ipynb.
 - converts ipython/colab magic % and ! to regular python code
+- Supported magic commands (%)
+    - %pwd, %ls, %cd, %cp, %mv, %mkdir, %rm, %rmdir, %cat, %pip, %env, %setenv
 - comments out unsupported ipython magic
 - creates new import blocks for converted code
 - logs all changes to a log file for review
@@ -123,9 +125,9 @@ os.listdir('folderName/subFolder')
 
 -----
 
-%chdir - change directory
+%cd - change directory
 ```python
-#   %chdir test-directory
+#   %cd test-directory
 
 os.chdir('test-directory')
 ```
