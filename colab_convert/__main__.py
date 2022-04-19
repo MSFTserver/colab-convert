@@ -56,6 +56,7 @@ cc_trailing_comment = ' #<cc-cm>'
 cc_import_comment = '#<cc-imports>\n'
 os_import = "import os\n"
 sp_import = "import subprocess\n"
+shutil_import = "import shutil\n"
 new_imports_meta_py = '# !! {"metadata":{\n# !!   "id":"cc-imports"\n# !! }'+"}\n"
 new_imports_cell_py = f"{header_comment}{new_imports_meta_py}\n{cc_import_comment}\n"
 new_imports_meta_ipy = {'id':'cc-imports'}
@@ -63,6 +64,7 @@ new_imports_cell_ipy = cc_import_comment
 new_import = False
 os_added = False
 sp_added = False
+sh_added = False
 
 # default options
 flags_desc = {
@@ -83,23 +85,31 @@ flags_desc = {
     f"  --outputsv": f" (-o)       : {translation['defmsg_out_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
     f"  --lang=": f" (-l=)         : {translation['defmsg_lang_info_msg']}\n       {translation['defwrd_default_wrd']} [English]\n      --lang=en_US\n      {', '.join(supported_languages)}"
 }
-magic_list = ["cd","env","set_env"]
+magic_list = ["cd","env","set_env","ls","cp","mv","pip","rm","rmdir","cat","mkdir","pwd"]
 help_flags = ['--help', '-h', '?']
 flags_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm','--no-imports', '-ni', '--outputs', '-o', '--lang=' , '-l=']
 
+def add_imports(add_import, f_type):
+    global new_import, new_imports_cell_ipy, new_imports_cell_py
+    if f_type == 'ipy':
+        new_imports_cell_ipy+=add_import
+    if f_type == 'py':
+        new_imports_cell_py+=add_import
+    new_import = True
+
 def check_imports(add_import,flags,f_type):
+    global os_added, sp_added, sh_added
     strip_import = add_import.replace('import ','').replace('\n','')
     if not flags['n_i']:
-        if not os_added or not sp_added:
-            if strip_import == 'os':
-                globals()['os_added'] = True
-            if strip_import == 'subprocess':
-                globals()['sp_added'] = True
-            if f_type == 'ipy':
-                globals()['new_imports_cell_ipy']+=add_import
-            if f_type == 'py':
-                globals()['new_imports_cell_py']+=add_import
-            globals()['new_import'] = True
+        if strip_import == 'os' and not os_added:
+            os_added = True
+            add_imports(add_import, f_type)
+        if strip_import == 'subprocess' and not sp_added:
+            sp_added = True
+            add_imports(add_import, f_type)
+        if strip_import == 'shutil' and not sh_added:
+            sh_added = True        
+            add_imports(add_import, f_type)
 
 # convert notebook to python
 def nb2py(notebook, flags):
@@ -194,6 +204,71 @@ def nb2py(notebook, flags):
                                 new_cmd = f"for k, v in os.environ.items():\n    print(f'{{k}}={{v}}')\n"
                                 new_cmd_spaces = f"{spaces}for k, v in os.environ.items():{cc_trailing_comment}\n{spaces}    print(f'{{k}}={{v}}'){cc_trailing_comment}\n"
                                 check_imports(os_import,flags,'py')
+
+                        if cmd[0] == "ls" and flags['c_m']:
+                            if len(cmd) == 2:
+                                new_cmd = f"os.listdir('{cmd[1]}')\n"
+                                new_cmd_spaces = f"{spaces}os.listdir('{cmd[1]}'){cc_trailing_comment}\n"
+                                check_imports(os_import,flags,'py')
+                            else:
+                                new_cmd = f"os.listdir()\n"
+                                new_cmd_spaces = f"{spaces}os.listdir(){cc_trailing_comment}\n"
+                                check_imports(os_import,flags,'py')
+
+                        if cmd[0] == "mkdir" and flags['c_m']:
+                            new_cmd = f"os.makedirs('{cmd[1]}')\n"
+                            new_cmd_spaces = f"{spaces}os.makedirs('{cmd[1]}'){cc_trailing_comment}\n"
+                            check_imports(os_import,flags,'py')
+
+                        if cmd[0] == "pwd" and flags['c_m']:
+                            new_cmd = f"os.getcwd()\n"
+                            new_cmd_spaces = f"{spaces}os.getcwd(){cc_trailing_comment}\n"
+                            check_imports(os_import,flags,'py')
+                        
+                        if cmd[0] == "rm" and flags['c_m']:
+                            if '-r' in cmd:
+                                cmd.remove('-r')
+                                new_cmd = f"shutil.rmtree('{cmd[1]}')\n"
+                                new_cmd_spaces = f"{spaces}shutil.rmtree('{cmd[1]}'){cc_trailing_comment}\n"
+                                check_imports(shutil_import,flags,'py')
+                            else:
+                                new_cmd = f"os.remove('{cmd[1]}')\n"
+                                new_cmd_spaces = f"{spaces}os.remove('{cmd[1]}'){cc_trailing_comment}\n"
+                                check_imports(os_import,flags,'py')
+
+                        if cmd[0] == "rmdir" and flags['c_m']:
+                            new_cmd = f"os.rmdir('{cmd[1]}')\n"
+                            new_cmd_spaces = f"{spaces}os.rmdir('{cmd[1]}'){cc_trailing_comment}\n"
+                            check_imports(os_import,flags,'py')
+                    
+                        if cmd[0] == "mv" and flags['c_m']:
+                            parse_cmd = os.path.basename(cmd[2])
+                            cmd2_ext = os.path.splitext(parse_cmd)[1]
+                            if not cmd2_ext:
+                                cmd[2] = f"{cmd[2]}/{cmd[1]}"
+                            new_cmd = f"shutil.move('{cmd[1]}', '{cmd[2]}')\n"
+                            new_cmd_spaces = f"{spaces}shutil.move('{cmd[1]}', '{cmd[2]}'){cc_trailing_comment}\n"
+                            check_imports(shutil_import,flags,'py')
+
+                        if cmd[0] == "cp" and flags['c_m']:
+                            new_cmd = f"shutil.copy('{cmd[1]}', '{cmd[2]}')\n"
+                            new_cmd_spaces = f"{spaces}shutil.copy('{cmd[1]}', '{cmd[2]}'){cc_trailing_comment}\n"
+                            check_imports(shutil_import,flags,'py')
+
+                        if cmd[0] == "cat" and flags['c_m']:
+                            if len(cmd) == 3:
+                                new_cmd = f"with open('{cmd[1]}', 'rb') as f:\n    with open('{cmd[2]}', 'wb') as out:\n        shutil.copyfileobj(f, out)\n"
+                                new_cmd_spaces = f"{spaces}with open('{cmd[1]}', 'rb') as f:{cc_trailing_comment}\n{spaces}    with open('{cmd[2]}', 'wb') as out:{cc_trailing_comment}\n{spaces}        shutil.copyfileobj(f, out){cc_trailing_comment}\n"
+                                check_imports(shutil_import,flags,'py')
+                            else:
+                                new_cmd = f"cat_read_file = open('{cmd[1]}', 'r')\n    cat_read_text = cat_read_file.read()\n    print(cat_read_text)\n    cat_read_file.close()"
+                                new_cmd_spaces = f"{spaces}cat_read_file = open('{cmd[1]}', 'r'){cc_trailing_comment}\n{spaces}cat_read_text = cat_read_file.read(){cc_trailing_comment}\n{spaces}print(cat_read_text){cc_trailing_comment}\n{spaces}cat_read_file.close(){cc_trailing_comment}\n"
+                                check_imports(shutil_import,flags,'py')
+
+                        if cmd[0] == "pip" and flags['c_m']:
+                            new_cmd = f"pip_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(pip_sub_p_res)\n"
+                            new_cmd_spaces = f"{spaces}pip_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(pip_sub_p_res){cc_trailing_comment}\n"
+                            check_imports(sp_import,flags,'py')
 
                         if flags['c_m']:
                             logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defwrd_converted_wrd']}:\n    {strip_line}  {translation['defwrd_to_wrd']}:\n    {new_cmd}")
@@ -310,10 +385,74 @@ def py2nb(py_str, flags):
                                         new_cmd_spaces = f"{spaces}os.environ['{cmd[1]}'] = '{cmd[2]}'{cc_trailing_comment}\n"
                                         check_imports(os_import,flags,'ipy')
                                 else:
-                                    if flags['c_m']:
-                                        new_cmd = f"for k, v in os.environ.items():\n    print(f'{{k}}={{v}}')\n"
-                                        new_cmd_spaces = f"{spaces}for k, v in os.environ.items():{cc_trailing_comment}\n{spaces}    print(f'{{k}}={{v}}'){cc_trailing_comment}\n"
-                                        check_imports(os_import,flags,'ipy')
+                                    new_cmd = f"for k, v in os.environ.items():\n    print(f'{{k}}={{v}}')\n"
+                                    new_cmd_spaces = f"{spaces}for k, v in os.environ.items():{cc_trailing_comment}\n{spaces}    print(f'{{k}}={{v}}'){cc_trailing_comment}\n"
+                                    check_imports(os_import,flags,'ipy')
+
+                            if cmd[0] == "ls" and flags['c_m']:
+                                if len(cmd) > 1:
+                                    new_cmd = f"os.listdir('{cmd[1]}')\n"
+                                    new_cmd_spaces = f"{spaces}os.listdir('{cmd[1]}'){cc_trailing_comment}\n"
+                                    check_imports(os_import,flags,'ipy')
+                                else:
+                                    new_cmd = f"os.listdir()\n"
+                                    new_cmd_spaces = f"{spaces}os.listdir(){cc_trailing_comment}\n"
+                                    check_imports(os_import,flags,'ipy')
+
+                            if cmd[0] == "mkdir" and flags['c_m']:
+                                new_cmd = f"os.makedirs('{cmd[1]}')\n"
+                                new_cmd_spaces = f"{spaces}os.makedirs('{cmd[1]}'){cc_trailing_comment}\n"
+                                check_imports(os_import,flags,'ipy')
+
+                            if cmd[0] == "pwd" and flags['c_m']:
+                                new_cmd = f"os.getcwd()\n"
+                                new_cmd_spaces = f"{spaces}os.getcwd(){cc_trailing_comment}\n"
+                                check_imports(os_import,flags,'ipy')
+                        
+                            if cmd[0] == "rm" and flags['c_m']:
+                                if '-r' in cmd:
+                                    cmd.remove('-r')
+                                    new_cmd = f"shutil.rmtree('{cmd[1]}')\n"
+                                    new_cmd_spaces = f"{spaces}shutil.rmtree('{cmd[1]}'){cc_trailing_comment}\n"
+                                    check_imports(shutil_import,flags,'ipy')
+                                else:
+                                    new_cmd = f"os.remove('{cmd[1]}')\n"
+                                    new_cmd_spaces = f"{spaces}os.remove('{cmd[1]}'){cc_trailing_comment}\n"
+                                    check_imports(os_import,flags,'ipy')
+
+                            if cmd[0] == "rmdir" and flags['c_m']:
+                                new_cmd = f"os.rmdir('{cmd[1]}')\n"
+                                new_cmd_spaces = f"{spaces}os.rmdir('{cmd[1]}'){cc_trailing_comment}\n"
+                                check_imports(os_import,flags,'ipy')
+
+                            if cmd[0] == "mv" and flags['c_m']:
+                                parse_cmd = os.path.basename(cmd[2])
+                                cmd2_ext = os.path.splitext(parse_cmd)[1]
+                                if not cmd2_ext:
+                                    cmd[2] = f"{cmd[2]}/{cmd[1]}"
+                                new_cmd = f"shutil.move('{cmd[1]}', '{cmd[2]}')\n"
+                                new_cmd_spaces = f"{spaces}shutil.move('{cmd[1]}', '{cmd[2]}'){cc_trailing_comment}\n"
+                                check_imports(shutil_import,flags,'py')
+
+                            if cmd[0] == "cp" and flags['c_m']:
+                                new_cmd = f"shutil.copy('{cmd[1]}', '{cmd[2]}')\n"
+                                new_cmd_spaces = f"{spaces}shutil.copy('{cmd[1]}', '{cmd[2]}'){cc_trailing_comment}\n"
+                                check_imports(shutil_import,flags,'ipy')
+
+                            if cmd[0] == "cat" and flags['c_m']:
+                                if len(cmd) == 2:
+                                    new_cmd = f"with open('{cmd[1]}', 'rb') as f:\n    with open('{cmd[2]}', 'wb') as out:\n        shutil.copyfileobj(f, out)\n"
+                                    new_cmd_spaces = f"{spaces}with open('{cmd[1]}', 'rb') as f:{cc_trailing_comment}\n{spaces}    with open('{cmd[2]}', 'wb') as out:{cc_trailing_comment}\n{spaces}        shutil.copyfileobj(f, out){cc_trailing_comment}\n"
+                                    check_imports(shutil_import,flags,'ipy')
+                                else:
+                                    new_cmd = f"cat_read_file = open('{cmd[1]}', 'r')\n    cat_read_text = cat_read_file.read()\n    print(cat_read_text)\n    cat_read_file.close()"
+                                    new_cmd_spaces = f"{spaces}cat_read_file = open('{cmd[1]}', 'r'){cc_trailing_comment}\n{spaces}cat_read_text = cat_read_file.read(){cc_trailing_comment}\n{spaces}print(cat_read_text){cc_trailing_comment}\n{spaces}cat_read_file.close(){cc_trailing_comment}\n"
+                                    check_imports(shutil_import,flags,'ipy')
+
+                            if cmd[0] == "pip" and flags['c_m']:
+                                new_cmd = f"pip_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(pip_sub_p_res)\n"
+                                new_cmd_spaces = f"{spaces}pip_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(pip_sub_p_res){cc_trailing_comment}\n"
+                                check_imports(sp_import,flags,'ipy')
 
                             if flags['c_m']:
                                 logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defwrd_converted_wrd']}:\n    {strip_line}  {translation['defwrd_to_wrd']}:\n    {new_cmd}")

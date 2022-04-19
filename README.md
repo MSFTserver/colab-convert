@@ -2,14 +2,9 @@
 
 Converts ipython/Google Colab Notebooks into runable Python code and vice versa 
 
-Atom/Hydrogen or VSCode/Python allows creating a python files split into cells with `# %%` separators with the ability to run cells via backend Jupyter session and interactively show results back.
-
-[colab-convert](https://pypi.python.org/pypi/colab-convert) python module converts files: .ipynb to .py and .py to .ipynb.
-
-**colab-convert** is a fork of the [ipynb-py-convert](https://github.com/kiwi0fruit/ipynb-py-convert).
-
 ## Features
 
+- converts files: .ipynb to .py and .py to .ipynb.
 - converts ipython/colab magic % and ! to regular python code
 - comments out unsupported ipython magic
 - creates new import blocks for converted code
@@ -17,10 +12,19 @@ Atom/Hydrogen or VSCode/Python allows creating a python files split into cells w
 - converted magic commands are appended with `#<cc-cm>`
 - commented magic commands are prefixed with `#<cc-ac>`
 - multi-lingual support to detect system language and let users choose
-    - Arabic, Dutch, English, French, German, Spanish
+    - Arabic, Dutch, English, German,
         - consider helping expand translations by adding your langauge in the `/lang` folder
 
 
+Atom/Hydrogen or VSCode/Python allows creating a python file split into cells with `# %%` separators having the ability to run cells via the backend of a Jupyter session and interactively show results back.
+
+**VSCode**
+
+![](https://raw.githubusercontent.com/MSFTserver/colab-convert/main/examples/vscode.png)
+
+**Jupyter ipynb notebook**
+
+![](https://raw.githubusercontent.com/MSFTserver/colab-convert/main/examples/jupyter.png)
 
 ## Install & Basic Usage
 
@@ -80,27 +84,91 @@ Available Flags
 
 # Conversion Code used
 
+<details>
+<summary>>click me to see code<</summary>
+
 ### Magic commands using bang (!)
 
 for this particular magic we send the command to the subprocess system and print the results
 
 ```python
-# e.g 
 #   !git clone https://test.com/test/test.git
 
 sub_p_res = subprocess.run(['git', 'clone' ,'https://test.com/test/test.git'], stdout=subprocess.PIPE).stdout.decode('utf-8')
-    print(sub_p_res)
+print(sub_p_res)
 ```
 
 ### Magic commands using percent (%)
 
+%pwd - get current working directory
+```python
+#   %pwd
+
+os.getcwd()
+```
+
+-----
+
+%ls - list items in directory
+```python
+#   %ls
+
+os.listdir()
+```
+```python
+#   %ls folderName/subFolder
+
+os.listdir('folderName/subFolder')
+```
+
+-----
+
 %chdir - change directory
 ```python
-# e.g 
 #   %chdir test-directory
 
 os.chdir('test-directory')
 ```
+
+-----
+
+%mkdir - make a new directory
+
+```python
+#   %mkdir test/newFolder
+
+os.makedirs('test/newFolder')
+```
+
+%mv - move file from one location to another
+```python
+#   %mv testFile.txt testFolder/
+
+shutil.move('testFile.txt', 'testFolder/testFile.txt')
+```
+
+-----
+
+%cp - copy file from one location to another
+```python
+#   %cp testFolder/testFile.txt newFolder/newTestFile.txt
+
+shutil.copy('testFolder/testFile.txt', 'newFolder/newTestFile.txt')
+```
+
+-----
+
+%cat - show the output of a file in standard format
+```python
+#   %cat testFolder/testFile.txt
+
+cat_read_file = open('testFolder/testFile.txt', 'r')
+cat_read_text = cat_read_file.read()
+print(cat_read_text)
+cat_read_file.close()
+```
+
+-----
 
 %env & %set_env - get, set or list environmental variables
 
@@ -118,61 +186,56 @@ this command actually has 5 ways to be used
     set value for var, using python expansion if possible
 ```
 ```python
-# e.g 
 #   %env
 
 for k, v in os.environ.items():
     print(f'{k}={v}')
 ```
 ```python
-# e.g 
 #   %env var
 
 os.environ['var']
 ```
 ```python
-# e.g 
 #   %env var value
 #   %set_env var value
 
 os.environ['var'] = 'value'
 ```
 ```python
-# e.g 
 #   %env var=value
 #   %set_env var=value
 
 os.environ['var'] = 'value'
 ```
 ```python
-# e.g 
 #   %env var=$value
 #   %set_env var=$value
 
 os.environ['var'] = '$value'
 ```
 
+-----
+
+%pip - install a pip package or other pip functions
+```python
+#   %pip install colab-convert
+
+pip_sub_p_res = subprocess.run(['pip', 'install', 'colab-convert'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+print(pip_sub_p_res)
+```
+
 ### Unsupported Magic Commands
 
 these will be commented out
 ```python
-# e.g 
 #   %quickref
 
 #<cc-cm> %quickref
 ```
 
+</details>
 
-## Troubleshooting
-
-* If encoding problems on Windows try using `python>=3.7`, setting `set PYTHONUTF8=1` in Windows console and use `colab-convert` for UTF-8 files only. If using [Git-Bash on Windows](https://git-scm.com/download/win) setting:
-
-```console
-export LANG=C.UTF-8
-export PYTHONIOENCODING=utf-8
-export PYTHONUTF8=1
-```
-should be enough. Also try setting default Bash settings to UTF-8: [Options] - [Text] - [Locale / Character set] - [C / UTF-8]. It might affect all Bash runs so there would be no need to setting encoding every time. 
 
 ## Example
 
@@ -182,10 +245,6 @@ or
 
 `colab-convert examples/plot.ipynb examples/plot.py`
 
-
-**VSCode**
-
-![](https://github.com/MSFTserver/colab-convert/raw/master/examples/vscode.png)
 
 Markdown cells are converted to python multiline strings `'''`. Code cells are left as is.
 
@@ -245,7 +304,18 @@ eg. final code block must include atleast this
 # !! }}
 ```
 
+## Troubleshooting
 
-**Jupyter ipynb notebook**
+* If encoding problems on Windows try using `python>=3.7`, setting `set PYTHONUTF8=1` in Windows console and use `colab-convert` for UTF-8 files only. If using [Git-Bash on Windows](https://git-scm.com/download/win) setting:
 
-![](https://github.com/MSFTserver/colab-convert/raw/master/examples/jupyter.png)
+```console
+export LANG=C.UTF-8
+export PYTHONIOENCODING=utf-8
+export PYTHONUTF8=1
+```
+should be enough. Also try setting default Bash settings to UTF-8: [Options] - [Text] - [Locale / Character set] - [C / UTF-8]. It might affect all Bash runs so there would be no need to setting encoding every time. 
+
+
+# Credits 
+
+**colab-convert** is a fork of the [ipynb-py-convert](https://github.com/kiwi0fruit/ipynb-py-convert).
