@@ -7,7 +7,7 @@ Converts ipython/Google Colab Notebooks into runable Python code and vice versa
 - converts files: .ipynb to .py and .py to .ipynb.
 - converts ipython/colab magic % and ! to regular python code
 - Supported magic commands (%)
-    - %pwd, %ls, %cd, %cp, %mv, %mkdir, %rm, %rmdir, %cat, %pip, %env, %setenv
+    - %pwd, %ls, %cd, %cp, %mv, %mkdir, %rm, %rmdir, %cat, %pip, %conda, %env, %setenv
 - comments out unsupported ipython magic
 - creates new import blocks for converted code
 - logs all changes to a log file for review
@@ -225,6 +225,14 @@ os.environ['var'] = '$value'
 
 pip_sub_p_res = subprocess.run(['pip', 'install', 'colab-convert'], stdout=subprocess.PIPE).stdout.decode('utf-8')
 print(pip_sub_p_res)
+```
+
+%conda - install a conda package or other conda functions
+```python
+#   %conda install colab-convert
+
+conda_sub_p_res = subprocess.run(['conda', 'install', 'colab-convert'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+print(conda_sub_p_res)
 ```
 
 ### Unsupported Magic Commands
