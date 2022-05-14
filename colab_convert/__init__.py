@@ -1,1 +1,1 @@
-from .__main__ import nb2py, py2nb, convert
+from .__main__ import nb2py, py2nb, convert, check_imports, add_imports, get_language

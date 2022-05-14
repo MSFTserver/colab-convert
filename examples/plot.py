@@ -15,6 +15,39 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+# test nesting and subprocesses
+if True:
+    !touch test_file.txt
+    !git clone https://github.com/MSFTserver/pytorch3d-lite.git
+    %pip list --outdated
+
+#test directory magic
+%ls
+%cd ..
+%ls
+%rm -r pytorch3d-lite
+%mkdir test_dir/test_subdir
+%cat test_file.txt
+%mv test_file.txt test_dir
+%ls test_dir
+%cp test_dir/test_file.txt test_dir/test_subdir/test_file.txt
+%ls
+%rm test_file.txt
+%ls
+%mv test_dir/test_file.txt test_dir/test_subdir/test_file.txt
+
+# test environment magic
+%env
+%env PATH
+%env TEST_COLAB_CONVERT=HELLO
+%set_env TEST_COLAB_CONVERT=HELLO
+%env TEST_COLAB_CONVERT
+%env TEST_COLAB_CONVERT GOODBYE
+%set_env TEST_COLAB_CONVERT GOODBYE
+%env TEST_COLAB_CONVERT
+
+%notValid
+
 x = np.linspace(0, 20, 100)
 plt.plot(x, np.sin(x))
 plt.show()

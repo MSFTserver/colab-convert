@@ -1,0 +1,88 @@
+////////////////////////////
+// Multi Language Support //
+////////////////////////////
+
+// you can use this as template to create new language support for the project!
+
+// words not to edit are "colab-convert" "ipynb" "py"
+// only edit the message after the equal sign
+
+/////////////
+//  Dutch  //
+//  nl_NL  //
+/////////////
+
+{
+// default messages
+'defmsg_help_main_1_msg': 'alle flags zijn optioneel en hebben standaardinstellingen voor het beste resultaat',
+'defmsg_help_main_2_msg': 'gebruik flags om bepaalde functies in of uit te schakelen aan/uit als standaard',
+'defmsg_lang_detected_msg': 'gedetecteerd als een ondersteunde taal',
+'defmsg_outputs_msg': 'toon uitvoer van converter',
+'defmsg_convert_magic_msg': 'converteer magische opdrachten',
+'defmsg_un_comment_msg': 'verander niet ondersteunde magische opdrachten in een comment',
+'defmsg_imports_msg': 'behoud nieuwe imports gemaakt door converter',
+'defmsg_add_imports_cell_msg': 'voeg nieuwe imports toe aan de top van het bestand',
+'defmsg_help_called_msg': 'help bericht opgevraagd',
+'defmsg_file_ext_msg': 'bestand moet .ipynb or .py zijn',
+'defmsg_set_output_ext_msg': 'uitvoer bestand instellen als',
+'defmsg_specify_file_msg': 'Specifieer minimaal één bestand om te converteren',
+'defmsg_usage_msg': 'Gebruik: colab-convert <invoer bestand> <uitvoer bestand> <extra flags>',
+'defmsg_un_command_det_msg': 'niet ondersteunde opdracht gedetecteerd',
+'defmsg_comment_un_cmd_msg': 'verander niet ondersteunde opdracht in een comment',
+'defmsg_def_set_ret_mag_msg': 'standaardinstellingen behoudt magische opdrachten',
+'defmsg_ret_mag_det_msg': 'is gedetecteerd, nieuwe imports zullen NIET worden gemaakt',
+'defmsg_convert_time_msg': 'conversie duurde',
+'defmsg_log_file_msg': 'log bestand aangemaakt',
+'defmsg_ac_over_nc_msg': 'heeft voorrang op',
+'defmsg_ac_over_nc_fall_msg': 'gebruikt',
+'defmsg_rm_over_cm_msg': 'heeft voorrang op',
+'defmsg_rm_over_cm_fall_msg': 'gebruikt',
+'defmsg_cmd_det_msg': 'opdracht gedetecteerd',
+'defmsg_in_file_msg': 'invoer bestand',
+'defmsg_in_file_convert_msg': 'invoer bestand om te converteren',
+'defmsg_out_file_msg': 'uitvoer bestand',
+'defmsg_out_file_convert_msg': 'uitvoer bestand om naar te schrijven',
+'defmsg_flags_help_msg': 'extra flags om naar de converter te passeren',
+'defmsg_help_flag_msg': 'Toon dit hulp bericht',
+'defmsg_def_flag_msg': 'standaard Flags ingesteld',
+'defmsg_def_flag_tip_msg': 'standaardinstellingen worden bepaald door invoer bestand',
+'defmsg_convert_msg': 'converteer magic',
+'defmsg_auto_comment_msg': 'auto comment',
+'defmsg_avl_flags_msg': 'beschikbare Flags',
+'defmsg_avl_flags_tip_msg': 'schakel bepaalde items in of uit',
+'defmsg_rm_info_msg': 'behoud magische opdrachten in de uitvoer',
+'defmsg_cm_info_msg': 'converteer magische opdrachten naar python code',
+'defmsg_ac_info_msg': 'converteer niet ondersteunde magische opdrachten naar comments',
+'defmsg_nc_info_msg': 'behoud niet ondersteunde magische opdrachten',
+'defmsg_ni_info_msg': 'voeg imports van geconverteerde magische opdrachten niet toe',
+'defmsg_out_info_msg': 'uitvoer naar console van conversies en commented lines',
+'defmsg_no_lang_msg': 'geen taal gedetecteerd in opdracht',
+'defmsg_lang_info_msg': 'taal om uitvoer meldingen in weer te geven',
+'defmsg_lang_not_supported_msg': 'taal niet ondersteund',
+'defmsg_lang_supported_msg': 'taal ondersteund',
+
+// default words
+'defwrd_convert_wrd': 'converteer',
+'defwrd_converted_wrd': 'geconverteerd',
+'defwrd_finished_wrd': 'klaar',
+'defwrd_default_wrd': 'standaard',
+'defwrd_to_wrd': 'naar',
+'defwrd_flags_wrd': 'flags',
+'defwrd_usage_wrd': 'gebruik',
+'defwrd_example_wrd': 'voorbeeld',
+'defwrd_seconds_wrd': 'secondes',
+'defwrd_input_wrd': 'invoer',
+'defwrd_output_wrd': 'uitvoer',
+'defwrd_outputs_wrd': 'uitvoer',
+'defwrd_imports_wrd': 'imports',
+'defwrd_start_wrd': 'START',
+'defwrd_warn_wrd': 'WAARSCHUW',
+'defwrd_ok_wrd': 'OK',
+'defwrd_not_wrd': 'NIET',
+'defwrd_off_wrd': 'UIT',
+'defwrd_on_wrd': 'AAN',
+'defwrd_yes_wrd': 'JA',
+'defwrd_no_wrd': 'NEE',
+'defwrd_in_wrd': 'in',
+'defwrd_out_wrd': 'uit',
+}
