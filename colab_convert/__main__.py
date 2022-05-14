@@ -13,7 +13,7 @@ logger.addHandler(logging.StreamHandler(sys.stdout))
 sup_lang = {
     'en_US': ['en_US', 'en', 'english', 'eng'], # English
     'de_DE':  ['de_DE', 'de', 'german', 'ger', 'deutsch'], # German
-    'es_ES': ['es_ES', 'es', 'spanish', 'spa', 'español', 'española'],  # Spanish
+    #'es_ES': ['es_ES', 'es', 'spanish', 'spa', 'español', 'española'],  # Spanish
     'ar_DZ': ['ar_EG', 'ar_DZ' 'ar', 'arabic', 'ara', 'عربى'],  # Arabic
     'nl_NL': ['nl_NL', 'nl', 'dutch', 'dut', 'nlt', 'nederlands']   # Dutch
 }
@@ -85,7 +85,7 @@ flags_desc = {
     f"  --outputsv": f" (-o)       : {translation['defmsg_out_info_msg']}\n      .py {translation['defwrd_default_wrd']}    [{translation['defwrd_off_wrd']}]\n      .ipynb {translation['defwrd_default_wrd']} [{translation['defwrd_off_wrd']}]",
     f"  --lang=": f" (-l=)         : {translation['defmsg_lang_info_msg']}\n       {translation['defwrd_default_wrd']} [English]\n      --lang=en_US\n      {', '.join(supported_languages)}"
 }
-magic_list = ["cd","env","set_env","ls","cp","mv","pip","rm","rmdir","cat","mkdir","pwd"]
+magic_list = ["cd","env","set_env","ls","cp","mv","pip","conda","rm","rmdir","cat","mkdir","pwd"]
 help_flags = ['--help', '-h', '?']
 flags_list = ['--auto-comment', '-ac', '--no-comment', '-nc', '--retain-magic', '-rm', '--convert-magic', '-cm','--no-imports', '-ni', '--outputs', '-o', '--lang=' , '-l=']
 
@@ -270,6 +270,11 @@ def nb2py(notebook, flags):
                             new_cmd_spaces = f"{spaces}pip_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(pip_sub_p_res){cc_trailing_comment}\n"
                             check_imports(sp_import,flags,'py')
 
+                        if cmd[0] == "conda" and flags['c_m']:
+                            new_cmd = f"conda_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(conda_sub_p_res)\n"
+                            new_cmd_spaces = f"{spaces}conda_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(conda_sub_p_res){cc_trailing_comment}\n"
+                            check_imports(sp_import,flags,'py')
+
                         if flags['c_m']:
                             logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defwrd_converted_wrd']}:\n    {strip_line}  {translation['defwrd_to_wrd']}:\n    {new_cmd}")
                     else:
@@ -452,6 +457,11 @@ def py2nb(py_str, flags):
                             if cmd[0] == "pip" and flags['c_m']:
                                 new_cmd = f"pip_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(pip_sub_p_res)\n"
                                 new_cmd_spaces = f"{spaces}pip_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(pip_sub_p_res){cc_trailing_comment}\n"
+                                check_imports(sp_import,flags,'ipy')
+
+                            if cmd[0] == "conda" and flags['c_m']:
+                                new_cmd = f"conda_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8')\n    print(conda_sub_p_res)\n"
+                                new_cmd_spaces = f"{spaces}conda_sub_p_res = subprocess.run({cmd}, stdout=subprocess.PIPE).stdout.decode('utf-8'){cc_trailing_comment}\n{spaces}print(conda_sub_p_res){cc_trailing_comment}\n"
                                 check_imports(sp_import,flags,'ipy')
 
                             if flags['c_m']:
