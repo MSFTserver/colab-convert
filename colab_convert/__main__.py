@@ -319,10 +319,10 @@ def py2nb(py_str, flags):
             new_json = json.loads("\n".join([x.strip() for x in chunk.splitlines() if '# !!' in x]).replace('# !!',''))
             chunk = "\n".join([x for x in chunk.splitlines() if '# !!' not in x])
         if chunk.startswith("'''"):
-            chunk = chunk.strip("'\n")
+            chunk = chunk.strip("'\n").splitlines(True)
             cell_type = 'markdown'
         elif chunk.startswith('"""'):
-            chunk = chunk.strip('"\n')
+            chunk = chunk.strip('"\n').splitlines(True)
             cell_type = 'markdown'
         else:
             cell_type = 'code'
