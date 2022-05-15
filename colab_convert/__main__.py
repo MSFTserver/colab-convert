@@ -293,7 +293,7 @@ def nb2py(notebook, flags):
                         source[x] = new_cmd_spaces
                 x+=1
             result.append("%s%s" % (header_comment+reformat_metadata, ''.join(source)))
-    if new_import:
+    if globals()['new_import']:
         format_cell_log = '\n'.join(["  " + split_line for split_line in new_imports_cell_py.split('\n')])
         logging.warn(f"[{translation['defwrd_warn_wrd']}] {translation['defmsg_add_imports_cell_msg']}\n{format_cell_log}")
         format_cell = '\n\n'.join(result)+f"\n\n{header_comment}{reformat_main_metadata}"
