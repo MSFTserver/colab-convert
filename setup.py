@@ -10,7 +10,7 @@ setup(
     name='colab-convert',
     packages=['colab_convert'],
     package_data={'colab_convert': ['lang/*.txt']},
-    version='2.0.3',
+    version='2.0.4',
     description='Convert .py files runnable in VSCode/Python or Atom/Hydrogen to jupyter/colab .ipynb notebooks and vice versa',
     long_description=long_description,
     long_description_content_type="text/markdown",
