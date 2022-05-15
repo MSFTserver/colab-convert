@@ -9,7 +9,8 @@ with io.open(path.join(here, 'README.md'), encoding='utf-8') as f:
 setup(
     name='colab-convert',
     packages=['colab_convert'],
-    version='2.0.0',
+    package_data={'colab_convert': ['lang/*.txt']},
+    version='2.0.3',
     description='Convert .py files runnable in VSCode/Python or Atom/Hydrogen to jupyter/colab .ipynb notebooks and vice versa',
     long_description=long_description,
     long_description_content_type="text/markdown",
