@@ -10,7 +10,7 @@ setup(
     name='colab-convert',
     packages=['colab_convert'],
     package_data={'colab_convert': ['lang/*.txt']},
-    version='2.0.4',
+    version='2.0.5',
     description='Convert .py files runnable in VSCode/Python or Atom/Hydrogen to jupyter/colab .ipynb notebooks and vice versa',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -20,6 +20,7 @@ setup(
     url='https://github.com/MSFTserver/colab-convert',
     keywords=['vscode', 'jupyter', 'convert', 'ipynb', 'py', 'atom', 'hydrogen', 'colab', 'google', 'google colab', 'notebook'],
     classifiers=[],
+    install_requires=['json5'],
     entry_points={
         'console_scripts': [
             'colab-convert=colab_convert.__main__:main',

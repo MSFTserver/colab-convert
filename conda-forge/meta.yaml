@@ -1,5 +1,5 @@
 {% set name = "colab-convert" %}
-{% set version = "2.0.4" %}
+{% set version = "2.0.5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 16a30d8b34dc570d1171586f7ae63be8402371cd664f4bcfbbf5066547095d0f
+  sha256: 3009a84a600c51bc56baf3d391e0992d8b3b0d11dfe90bbde0665c737699816c
 
 build:
   noarch: python
   number: 0
   entry_points:
     - colab-convert = colab_convert.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . -vv"
 
 requirements:
   host:
@@ -22,10 +22,12 @@ requirements:
     - pip
   run:
     - python
+    - json5
 
 test:
   imports:
     - colab_convert
+    - json5
 
 about:
   home: https://github.com/MSFTserver/colab-convert
