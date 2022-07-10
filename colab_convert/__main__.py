@@ -519,6 +519,7 @@ def convert(in_file, out_file, extra_flags):
         notebook = py2nb(py_str, extra_flags)
         with open(out_file, 'w', encoding='utf-8') as f:
             json.dump(notebook, f, indent=2)
+            f.write("\n")
 
     else:
         logging.critical(translation['defmsg_file_ext_msg'])
