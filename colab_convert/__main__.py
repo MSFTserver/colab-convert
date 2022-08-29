@@ -316,7 +316,11 @@ def py2nb(py_str, flags):
     for chunk in chunks:
         new_json = {'metadata':{}}
         if chunk.startswith('# !!'):
-            new_json = json.loads("\n".join([x.strip() for x in chunk.splitlines() if '# !!' in x]).replace('# !!',''))
+            try:
+                new_json = json.loads("\n".join([x.strip() for x in chunk.splitlines() if '# !!' in x]).replace('# !!',''))
+            except json.decoder.JSONDecodeError as e: 
+                print(f"\nError parsing JSON for chunk:\n\n{chunk}\n")
+                raise e
             chunk = "\n".join([x for x in chunk.splitlines() if '# !!' not in x])
         if chunk.startswith("'''"):
             chunk = chunk.strip("'\n").splitlines(True)
